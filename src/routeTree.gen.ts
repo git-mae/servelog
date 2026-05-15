@@ -9,38 +9,222 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AppRouteImport } from './routes/app'
+import { Route as AdviserRouteImport } from './routes/adviser'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppReportsRouteImport } from './routes/app.reports'
+import { Route as AppProfileRouteImport } from './routes/app.profile'
+import { Route as AppLogRouteImport } from './routes/app.log'
+import { Route as AppHomeRouteImport } from './routes/app.home'
+import { Route as AppHistoryRouteImport } from './routes/app.history'
+import { Route as AdviserVerifiedRouteImport } from './routes/adviser.verified'
+import { Route as AdviserStudentsRouteImport } from './routes/adviser.students'
+import { Route as AdviserQueueRouteImport } from './routes/adviser.queue'
+import { Route as AdviserProfileRouteImport } from './routes/adviser.profile'
+import { Route as AdviserReviewIdRouteImport } from './routes/adviser.review.$id'
 
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdviserRoute = AdviserRouteImport.update({
+  id: '/adviser',
+  path: '/adviser',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppReportsRoute = AppReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLogRoute = AppLogRouteImport.update({
+  id: '/log',
+  path: '/log',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHomeRoute = AppHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHistoryRoute = AppHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => AppRoute,
+} as any)
+const AdviserVerifiedRoute = AdviserVerifiedRouteImport.update({
+  id: '/verified',
+  path: '/verified',
+  getParentRoute: () => AdviserRoute,
+} as any)
+const AdviserStudentsRoute = AdviserStudentsRouteImport.update({
+  id: '/students',
+  path: '/students',
+  getParentRoute: () => AdviserRoute,
+} as any)
+const AdviserQueueRoute = AdviserQueueRouteImport.update({
+  id: '/queue',
+  path: '/queue',
+  getParentRoute: () => AdviserRoute,
+} as any)
+const AdviserProfileRoute = AdviserProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AdviserRoute,
+} as any)
+const AdviserReviewIdRoute = AdviserReviewIdRouteImport.update({
+  id: '/review/$id',
+  path: '/review/$id',
+  getParentRoute: () => AdviserRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/adviser': typeof AdviserRouteWithChildren
+  '/app': typeof AppRouteWithChildren
+  '/login': typeof LoginRoute
+  '/adviser/profile': typeof AdviserProfileRoute
+  '/adviser/queue': typeof AdviserQueueRoute
+  '/adviser/students': typeof AdviserStudentsRoute
+  '/adviser/verified': typeof AdviserVerifiedRoute
+  '/app/history': typeof AppHistoryRoute
+  '/app/home': typeof AppHomeRoute
+  '/app/log': typeof AppLogRoute
+  '/app/profile': typeof AppProfileRoute
+  '/app/reports': typeof AppReportsRoute
+  '/adviser/review/$id': typeof AdviserReviewIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/adviser': typeof AdviserRouteWithChildren
+  '/app': typeof AppRouteWithChildren
+  '/login': typeof LoginRoute
+  '/adviser/profile': typeof AdviserProfileRoute
+  '/adviser/queue': typeof AdviserQueueRoute
+  '/adviser/students': typeof AdviserStudentsRoute
+  '/adviser/verified': typeof AdviserVerifiedRoute
+  '/app/history': typeof AppHistoryRoute
+  '/app/home': typeof AppHomeRoute
+  '/app/log': typeof AppLogRoute
+  '/app/profile': typeof AppProfileRoute
+  '/app/reports': typeof AppReportsRoute
+  '/adviser/review/$id': typeof AdviserReviewIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/adviser': typeof AdviserRouteWithChildren
+  '/app': typeof AppRouteWithChildren
+  '/login': typeof LoginRoute
+  '/adviser/profile': typeof AdviserProfileRoute
+  '/adviser/queue': typeof AdviserQueueRoute
+  '/adviser/students': typeof AdviserStudentsRoute
+  '/adviser/verified': typeof AdviserVerifiedRoute
+  '/app/history': typeof AppHistoryRoute
+  '/app/home': typeof AppHomeRoute
+  '/app/log': typeof AppLogRoute
+  '/app/profile': typeof AppProfileRoute
+  '/app/reports': typeof AppReportsRoute
+  '/adviser/review/$id': typeof AdviserReviewIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/adviser'
+    | '/app'
+    | '/login'
+    | '/adviser/profile'
+    | '/adviser/queue'
+    | '/adviser/students'
+    | '/adviser/verified'
+    | '/app/history'
+    | '/app/home'
+    | '/app/log'
+    | '/app/profile'
+    | '/app/reports'
+    | '/adviser/review/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/adviser'
+    | '/app'
+    | '/login'
+    | '/adviser/profile'
+    | '/adviser/queue'
+    | '/adviser/students'
+    | '/adviser/verified'
+    | '/app/history'
+    | '/app/home'
+    | '/app/log'
+    | '/app/profile'
+    | '/app/reports'
+    | '/adviser/review/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/adviser'
+    | '/app'
+    | '/login'
+    | '/adviser/profile'
+    | '/adviser/queue'
+    | '/adviser/students'
+    | '/adviser/verified'
+    | '/app/history'
+    | '/app/home'
+    | '/app/log'
+    | '/app/profile'
+    | '/app/reports'
+    | '/adviser/review/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdviserRoute: typeof AdviserRouteWithChildren
+  AppRoute: typeof AppRouteWithChildren
+  LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/adviser': {
+      id: '/adviser'
+      path: '/adviser'
+      fullPath: '/adviser'
+      preLoaderRoute: typeof AdviserRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +232,122 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/reports': {
+      id: '/app/reports'
+      path: '/reports'
+      fullPath: '/app/reports'
+      preLoaderRoute: typeof AppReportsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/profile': {
+      id: '/app/profile'
+      path: '/profile'
+      fullPath: '/app/profile'
+      preLoaderRoute: typeof AppProfileRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/log': {
+      id: '/app/log'
+      path: '/log'
+      fullPath: '/app/log'
+      preLoaderRoute: typeof AppLogRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/home': {
+      id: '/app/home'
+      path: '/home'
+      fullPath: '/app/home'
+      preLoaderRoute: typeof AppHomeRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/history': {
+      id: '/app/history'
+      path: '/history'
+      fullPath: '/app/history'
+      preLoaderRoute: typeof AppHistoryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/adviser/verified': {
+      id: '/adviser/verified'
+      path: '/verified'
+      fullPath: '/adviser/verified'
+      preLoaderRoute: typeof AdviserVerifiedRouteImport
+      parentRoute: typeof AdviserRoute
+    }
+    '/adviser/students': {
+      id: '/adviser/students'
+      path: '/students'
+      fullPath: '/adviser/students'
+      preLoaderRoute: typeof AdviserStudentsRouteImport
+      parentRoute: typeof AdviserRoute
+    }
+    '/adviser/queue': {
+      id: '/adviser/queue'
+      path: '/queue'
+      fullPath: '/adviser/queue'
+      preLoaderRoute: typeof AdviserQueueRouteImport
+      parentRoute: typeof AdviserRoute
+    }
+    '/adviser/profile': {
+      id: '/adviser/profile'
+      path: '/profile'
+      fullPath: '/adviser/profile'
+      preLoaderRoute: typeof AdviserProfileRouteImport
+      parentRoute: typeof AdviserRoute
+    }
+    '/adviser/review/$id': {
+      id: '/adviser/review/$id'
+      path: '/review/$id'
+      fullPath: '/adviser/review/$id'
+      preLoaderRoute: typeof AdviserReviewIdRouteImport
+      parentRoute: typeof AdviserRoute
+    }
   }
 }
 
+interface AdviserRouteChildren {
+  AdviserProfileRoute: typeof AdviserProfileRoute
+  AdviserQueueRoute: typeof AdviserQueueRoute
+  AdviserStudentsRoute: typeof AdviserStudentsRoute
+  AdviserVerifiedRoute: typeof AdviserVerifiedRoute
+  AdviserReviewIdRoute: typeof AdviserReviewIdRoute
+}
+
+const AdviserRouteChildren: AdviserRouteChildren = {
+  AdviserProfileRoute: AdviserProfileRoute,
+  AdviserQueueRoute: AdviserQueueRoute,
+  AdviserStudentsRoute: AdviserStudentsRoute,
+  AdviserVerifiedRoute: AdviserVerifiedRoute,
+  AdviserReviewIdRoute: AdviserReviewIdRoute,
+}
+
+const AdviserRouteWithChildren =
+  AdviserRoute._addFileChildren(AdviserRouteChildren)
+
+interface AppRouteChildren {
+  AppHistoryRoute: typeof AppHistoryRoute
+  AppHomeRoute: typeof AppHomeRoute
+  AppLogRoute: typeof AppLogRoute
+  AppProfileRoute: typeof AppProfileRoute
+  AppReportsRoute: typeof AppReportsRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppHistoryRoute: AppHistoryRoute,
+  AppHomeRoute: AppHomeRoute,
+  AppLogRoute: AppLogRoute,
+  AppProfileRoute: AppProfileRoute,
+  AppReportsRoute: AppReportsRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdviserRoute: AdviserRouteWithChildren,
+  AppRoute: AppRouteWithChildren,
+  LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
