@@ -13,6 +13,11 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AdviserRouteImport } from './routes/adviser'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppReportsRouteImport } from './routes/app.reports'
+import { Route as AppProfileRouteImport } from './routes/app.profile'
+import { Route as AppLogRouteImport } from './routes/app.log'
+import { Route as AppHomeRouteImport } from './routes/app.home'
+import { Route as AppHistoryRouteImport } from './routes/app.history'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -34,38 +39,106 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppReportsRoute = AppReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLogRoute = AppLogRouteImport.update({
+  id: '/log',
+  path: '/log',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHomeRoute = AppHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHistoryRoute = AppHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/adviser': typeof AdviserRoute
-  '/app': typeof AppRoute
+  '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/app/history': typeof AppHistoryRoute
+  '/app/home': typeof AppHomeRoute
+  '/app/log': typeof AppLogRoute
+  '/app/profile': typeof AppProfileRoute
+  '/app/reports': typeof AppReportsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/adviser': typeof AdviserRoute
-  '/app': typeof AppRoute
+  '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/app/history': typeof AppHistoryRoute
+  '/app/home': typeof AppHomeRoute
+  '/app/log': typeof AppLogRoute
+  '/app/profile': typeof AppProfileRoute
+  '/app/reports': typeof AppReportsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/adviser': typeof AdviserRoute
-  '/app': typeof AppRoute
+  '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/app/history': typeof AppHistoryRoute
+  '/app/home': typeof AppHomeRoute
+  '/app/log': typeof AppLogRoute
+  '/app/profile': typeof AppProfileRoute
+  '/app/reports': typeof AppReportsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/adviser' | '/app' | '/login'
+  fullPaths:
+    | '/'
+    | '/adviser'
+    | '/app'
+    | '/login'
+    | '/app/history'
+    | '/app/home'
+    | '/app/log'
+    | '/app/profile'
+    | '/app/reports'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/adviser' | '/app' | '/login'
-  id: '__root__' | '/' | '/adviser' | '/app' | '/login'
+  to:
+    | '/'
+    | '/adviser'
+    | '/app'
+    | '/login'
+    | '/app/history'
+    | '/app/home'
+    | '/app/log'
+    | '/app/profile'
+    | '/app/reports'
+  id:
+    | '__root__'
+    | '/'
+    | '/adviser'
+    | '/app'
+    | '/login'
+    | '/app/history'
+    | '/app/home'
+    | '/app/log'
+    | '/app/profile'
+    | '/app/reports'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdviserRoute: typeof AdviserRoute
-  AppRoute: typeof AppRoute
+  AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
 }
 
@@ -99,13 +172,66 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/reports': {
+      id: '/app/reports'
+      path: '/reports'
+      fullPath: '/app/reports'
+      preLoaderRoute: typeof AppReportsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/profile': {
+      id: '/app/profile'
+      path: '/profile'
+      fullPath: '/app/profile'
+      preLoaderRoute: typeof AppProfileRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/log': {
+      id: '/app/log'
+      path: '/log'
+      fullPath: '/app/log'
+      preLoaderRoute: typeof AppLogRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/home': {
+      id: '/app/home'
+      path: '/home'
+      fullPath: '/app/home'
+      preLoaderRoute: typeof AppHomeRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/history': {
+      id: '/app/history'
+      path: '/history'
+      fullPath: '/app/history'
+      preLoaderRoute: typeof AppHistoryRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
+
+interface AppRouteChildren {
+  AppHistoryRoute: typeof AppHistoryRoute
+  AppHomeRoute: typeof AppHomeRoute
+  AppLogRoute: typeof AppLogRoute
+  AppProfileRoute: typeof AppProfileRoute
+  AppReportsRoute: typeof AppReportsRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppHistoryRoute: AppHistoryRoute,
+  AppHomeRoute: AppHomeRoute,
+  AppLogRoute: AppLogRoute,
+  AppProfileRoute: AppProfileRoute,
+  AppReportsRoute: AppReportsRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdviserRoute: AdviserRoute,
-  AppRoute: AppRoute,
+  AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
