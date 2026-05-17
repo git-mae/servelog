@@ -11,10 +11,6 @@ export const Route = createFileRoute("/adviser/profile")({
 function AdviserProfile() {
   const nav = useNavigate();
   const adv = getAdviser();
-  const subs = useStore((s) => s.submissions);
-  const pending = subs.filter((s) => s.status === "pending").length;
-  const approved = subs.filter((s) => s.status === "approved").length;
-  const rejected = subs.filter((s) => s.status === "rejected").length;
 
   return (
     <>
@@ -31,12 +27,6 @@ function AdviserProfile() {
         </div>
         <p className="mt-3 text-xs text-muted-foreground">{adv.department}</p>
 
-        <div className="mt-6 grid grid-cols-3 gap-2">
-          <Stat label="Pending" value={pending} />
-          <Stat label="Approved" value={approved} />
-          <Stat label="Rejected" value={rejected} />
-        </div>
-
         <Link
           to="/adviser/verified"
           className="mt-6 flex items-center justify-between rounded-2xl border border-border bg-card p-4 transition hover:border-primary"
@@ -47,11 +37,6 @@ function AdviserProfile() {
           </span>
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </Link>
-
-        <div className="mt-3 rounded-2xl border border-border bg-card p-4">
-          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Assigned students</p>
-          <p className="mt-1 text-2xl font-semibold">{getRoster().length}</p>
-        </div>
 
         <button
           onClick={() => { actions.setRole(null); nav({ to: "/" }); }}
