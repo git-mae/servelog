@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { Bell, CheckCircle2, XCircle, Inbox, CalendarClock } from "lucide-react";
 import {
   Sheet,
@@ -26,6 +26,7 @@ const TONE: Record<NotifKind, string> = {
 
 export function NotificationBell({ role, recipientId }: { role: Role; recipientId: string }) {
   const [open, setOpen] = useState(false);
+  const nav = useNavigate();
   // Subscribe to notifications so the badge updates live.
   useStore((s) => s.notifications);
   const items = getNotifications(role, recipientId);
@@ -64,15 +65,17 @@ export function NotificationBell({ role, recipientId }: { role: Role; recipientI
           )}
           {items.map((n) => {
             const Icon = ICONS[n.kind];
-            const Wrapper: React.ElementType = n.href ? Link : "div";
-            const wrapperProps = n.href
-              ? { to: n.href, params: n.hrefParams ?? {}, onClick: () => setOpen(false) }
-              : {};
+            const go = () => {
+              if (!n.href) return;
+              setOpen(false);
+              nav({ to: n.href as string, params: (n.hrefParams ?? {}) as never });
+            };
             return (
-              <Wrapper
+              <button
                 key={n.id}
-                {...wrapperProps}
-                className={`block rounded-2xl border p-3 transition ${n.read ? "border-border bg-card" : "border-primary/40 bg-primary/5"}`}
+                type="button"
+                onClick={go}
+                className={`block w-full rounded-2xl border p-3 text-left transition ${n.read ? "border-border bg-card" : "border-primary/40 bg-primary/5"}`}
               >
                 <div className="flex items-start gap-3">
                   <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-xl ${TONE[n.kind]}`}>
@@ -86,7 +89,7 @@ export function NotificationBell({ role, recipientId }: { role: Role; recipientI
                     </p>
                   </div>
                 </div>
-              </Wrapper>
+              </button>
             );
           })}
         </div>
