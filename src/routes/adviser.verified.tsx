@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useMemo } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { useStore, getRoster } from "@/lib/mock-data";
 
@@ -8,7 +9,8 @@ export const Route = createFileRoute("/adviser/verified")({
 });
 
 function Verified() {
-  const subs = useStore((s) => s.submissions.filter((x) => x.status !== "pending"));
+  const all = useStore((s) => s.submissions);
+  const subs = useMemo(() => all.filter((x) => x.status !== "pending"), [all]);
   const roster = getRoster();
 
   return (
