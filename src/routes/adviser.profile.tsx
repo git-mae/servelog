@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { AppHeader } from "@/components/AppHeader";
-import { actions, getAdviser, getRoster, useStore } from "@/lib/mock-data";
+import { actions, getAdviser } from "@/lib/mock-data";
 import { ChevronRight, CheckCircle2, LogOut } from "lucide-react";
 
 export const Route = createFileRoute("/adviser/profile")({
