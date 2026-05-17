@@ -49,11 +49,3 @@ function AdviserProfile() {
   );
 }
 
-function Stat({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="rounded-2xl border border-border bg-card p-3 text-center">
-      <p className="text-xl font-semibold">{value}</p>
-      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</p>
-    </div>
-  );
-}
