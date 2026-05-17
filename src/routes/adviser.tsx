@@ -1,6 +1,8 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { BottomNav } from "@/components/BottomNav";
 import { PhoneFrame } from "@/components/PhoneFrame";
+import { ensurePermission } from "@/lib/browser-notifications";
 
 export const Route = createFileRoute("/adviser")({
   beforeLoad: () => {
@@ -13,6 +15,7 @@ export const Route = createFileRoute("/adviser")({
 });
 
 function AdviserLayout() {
+  useEffect(() => { ensurePermission(); }, []);
   return (
     <PhoneFrame>
       <div className="flex min-h-screen flex-col">

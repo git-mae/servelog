@@ -1,76 +1,50 @@
-## SERVELOG — Mobile-first UI (v1, mock data)
+# Notifications + Verified tab fix
 
-A clean, minimalist mobile-first web app for tracking community service hours at New Era University. Both Student and Adviser roles, full feature surface, mock data only (Cloud can be enabled later).
+## 1. Fix "can't view Verified" on adviser
 
-### Design system
+The `/adviser/verified` route and bottom-nav link both exist and are registered, so the most likely cause is the 4-tab bottom nav being clipped/hard to tap on the user's current viewport. Two small fixes:
 
-- Style: clean, minimalist, lots of whitespace, soft cards, rounded-2xl, subtle borders.
-- Palette (calm sage, oklch tokens in `src/styles.css`):
-  - background `#f5f0e8` (warm cream)
-  - surface/card `#ffffff`
-  - muted `#dce5d4`
-  - accent/primary `#2d5a3d` (deep sage)
-  - secondary accent `#a8c0a0` (soft sage)
-- Typography: Inter for UI, with a slightly stronger display weight for headings. No serif.
-- Components: shadcn/ui (Button, Card, Progress, Tabs, Dialog, Sheet, Input, Textarea, Badge, Avatar).
-- Mobile-first; max width container (~480px) centered on desktop with a soft phone-frame backdrop so it feels like a mobile app preview.
+- Make the adviser bottom nav clearly show all 4 tabs (tighten spacing, ensure `Verified` icon/label fit and the active state is obvious).
+- Add a **"Verified history"** shortcut card on the adviser **Queue** screen and on the **Profile** screen so it's reachable from multiple places.
 
-### Routes (TanStack Start, separate route files)
+No data/logic change needed — the route already lists approved + rejected submissions from the mock store.
 
-```
-src/routes/
-  __root.tsx                — shell + role switcher (mock), bottom-nav layout for app
-  index.tsx                  — landing/role pick: "I'm a Student" / "I'm an Adviser"
-  login.tsx                  — mock login (pre-filled NEU student/adviser)
-  _app.tsx                   — authenticated layout w/ bottom nav (Home, Log, Reports, Profile)
-  _app/home.tsx              — Student dashboard: cumulative hours, progress bar, recent logs, suggestions
-  _app/log.tsx               — Log new activity (form + proof upload preview)
-  _app/history.tsx           — All submissions w/ status filters
-  _app/reports.tsx           — Generate/preview Hours Summary Report (printable view)
-  _app/profile.tsx           — Student profile, violation, required hours
-  _adviser.tsx               — Adviser layout w/ bottom nav (Queue, Verified, Students, Profile)
-  _adviser/queue.tsx         — Pending submissions list with AI duplicate flags
-  _adviser/review.$id.tsx   — Review detail: proof viewer, approve/reject w/ comment
-  _adviser/students.tsx      — Roster + per-student progress
-  _adviser/profile.tsx       — Adviser profile
-```
+## 2. Notifications (UI-only, mock)
 
-### Features (all mocked, in-memory)
+Since the app is still UI-only (no Cloud), we'll implement an **in-app notification system** that simulates push:
 
-Student
-- Dashboard: name, course, violation type, required vs completed hours, circular + linear progress, semester breakdown, next milestone.
-- Log Activity: date, event title, organizer, location, hours, description, proof upload (image preview only). Shows "AI duplicate check" inline indicator after submit.
-- History: list grouped by status (Pending, Approved, Rejected) with adviser comments on rejected.
-- Reports: formatted Hours Summary preview with print-friendly layout and "Download PDF" (window.print).
-- Suggestions: 3 recommended upcoming opportunities matching course/interests (mock cards).
-- Profile: editable name/course/email; read-only violation + required hours.
+- A persistent notification store in `src/lib/mock-data.ts` (`notifications: Notification[]`, scoped by `recipientId` + `recipientRole`).
+- A **bell icon** in `AppHeader` with an unread-count badge that opens a notification sheet/drawer listing recent items (tap to navigate to the related submission/activity).
+- A **toast** (sonner) fires the moment a new notification is created in the active session — this is the "push" feel.
+- Optional: request the browser's `Notification.permission` once on first login and, if granted, also fire a real OS notification. Gracefully no-op when denied or unsupported (works in the published web app; preview iframe may block it).
 
-Adviser
-- Queue: pending list, each with AI flag badge ("Possible duplicate" when date+location match), search/filter.
-- Review detail: full submission, proof image, side-by-side similar past entry when flagged, Approve / Reject (with required comment on reject).
-- Students: roster with per-student progress bars and quick filter (at risk / on track / done).
-- Verified: history of actioned items.
+### Triggers
 
-Cross-cutting
-- Mock data store: `src/lib/mock-data.ts` with students, advisers, submissions, opportunities. Lightweight zustand or React context for mutations across screens.
-- Empty states, skeletons, toasts (sonner) for actions.
-- Single H1 per page, semantic HTML, meta tags per route.
+| Event | Recipient | Notification |
+|---|---|---|
+| Student submits a new activity | All advisers | "New submission from {student} — {title}" → opens `/adviser/review/$id` |
+| Adviser approves a submission | The student | "Your activity '{title}' was approved (+{hours} hrs)" → opens `/app/history` |
+| Adviser rejects a submission | The student | "Your activity '{title}' was rejected — tap to view note" → opens `/app/history` |
+| Upcoming opportunity within 3 days (and student is below required hours) | Student | "Upcoming: {title} on {date} at {location}" → opens `/app/home` |
 
-### Technical notes
+The upcoming-service reminder is generated on app load by a small `seedUpcomingReminders()` helper that scans `OPPORTUNITIES` against today + 3 days and inserts one notification per match (deduped by opportunity id).
 
-- TanStack Router file-based routing; flat dot-separated names; `_app` and `_adviser` are pathless layout routes that render bottom nav + `<Outlet />`.
-- All colors via semantic tokens in `src/styles.css` (oklch). No hardcoded hex in components.
-- Mobile-first Tailwind; container caps width on larger screens.
-- No backend yet: mock auth via localStorage role flag. Clear "Demo data" banner on first run.
-- Set preview viewport to mobile.
+### Files
 
-### Out of scope for this build
+- **edit** `src/lib/mock-data.ts` — add `Notification` type, `notifications` slice, `addNotification`, `markAllRead`, `getUnreadCount`, and wire `addSubmission`/`decide` to push notifications. Seed upcoming-opportunity reminders on first run.
+- **new** `src/components/NotificationBell.tsx` — bell button + Sheet listing notifications, grouped by today/earlier, with empty state.
+- **new** `src/lib/browser-notifications.ts` — thin wrapper around `window.Notification` (permission request + safe `notify()` no-op fallback).
+- **edit** `src/components/AppHeader.tsx` — render `<NotificationBell />` in the `right` slot by default (still overridable).
+- **edit** `src/components/BottomNav.tsx` — adviser grid spacing tweak so Verified is clearly visible.
+- **edit** `src/routes/adviser.queue.tsx` and `src/routes/adviser.profile.tsx` — add a "Verified history" link card.
+- **edit** `src/routes/app.tsx` and `src/routes/adviser.tsx` — on mount, request browser notification permission once and run the upcoming-reminder seeder.
 
-- Real authentication, database, file storage (Cloud not enabled per user choice).
-- Real AI duplicate detection (simulated via simple date+location match in mock data).
-- Push notifications, real PDF export (uses browser print).
+## Out of scope
 
-### Next iteration (after approval of v1)
+- Real server-side push (FCM/APNs) — needs Lovable Cloud + a device token registry. Can be added when backend is enabled.
+- Email/SMS reminders.
 
-- Enable Lovable Cloud: auth, profiles + user_roles tables, submissions table, storage bucket for proof, RLS policies.
-- Wire Adviser approval workflow to DB and real duplicate detection via server function.
+## Notes for the user
+
+- Toasts and the in-app bell work everywhere, including the editor preview.
+- Real OS-level push popups only work in the **published** site after the user clicks "Allow notifications". They won't appear inside the Lovable editor iframe.

@@ -1,5 +1,7 @@
 // In-memory mock store for SERVELOG demo. Replace with Lovable Cloud later.
 import { useSyncExternalStore } from "react";
+import { toast } from "sonner";
+import { notify } from "./browser-notifications";
 
 export type Role = "student" | "adviser";
 
@@ -89,11 +91,28 @@ const seedSubs = (): Submission[] => [
   { id: "sub-007", studentId: "stu-004", title: "Community Tutorial", organizer: "CICS SC", location: "Brgy. Holy Spirit", date: "2026-05-01", hours: 4, description: "Tutored grade-school kids in math.", status: "rejected", adviserComment: "Proof image is unclear. Please re-upload a higher quality photo with visible date.", createdAt: "2026-05-02T11:00:00Z" },
 ];
 
+export type NotifKind = "submitted" | "approved" | "rejected" | "upcoming";
+
+export interface Notification {
+  id: string;
+  recipientRole: Role;
+  recipientId: string;
+  kind: NotifKind;
+  title: string;
+  body: string;
+  href?: string;
+  hrefParams?: Record<string, string>;
+  read: boolean;
+  createdAt: string;
+  dedupeKey?: string;
+}
+
 interface State {
   role: Role | null;
   currentStudentId: string;
   currentAdviserId: string;
   submissions: Submission[];
+  notifications: Notification[];
 }
 
 let state: State = {
@@ -101,6 +120,7 @@ let state: State = {
   currentStudentId: "stu-001",
   currentAdviserId: "adv-001",
   submissions: seedSubs(),
+  notifications: [],
 };
 
 const listeners = new Set<() => void>();
@@ -142,9 +162,20 @@ export const actions = {
     };
     state = { ...state, submissions: [sub, ...state.submissions] };
     emit();
+    const stu = getStudent(sub.studentId);
+    actions.pushNotification({
+      recipientRole: "adviser",
+      recipientId: ADVISER.id,
+      kind: "submitted",
+      title: "New submission for review",
+      body: `${stu.name} logged "${sub.title}" (${sub.hours} hrs)`,
+      href: "/adviser/review/$id",
+      hrefParams: { id: sub.id },
+    });
     return sub;
   },
   decide(id: string, status: "approved" | "rejected", comment?: string) {
+    const target = state.submissions.find((s) => s.id === id);
     state = {
       ...state,
       submissions: state.submissions.map((s) =>
@@ -152,8 +183,86 @@ export const actions = {
       ),
     };
     emit();
+    if (target) {
+      actions.pushNotification({
+        recipientRole: "student",
+        recipientId: target.studentId,
+        kind: status,
+        title: status === "approved" ? "Activity approved" : "Activity needs changes",
+        body: status === "approved"
+          ? `"${target.title}" was approved (+${target.hours} hrs)`
+          : `"${target.title}" was rejected${comment ? ` — ${comment}` : ""}`,
+        href: "/app/history",
+      });
+    }
+  },
+  pushNotification(input: Omit<Notification, "id" | "read" | "createdAt">) {
+    if (input.dedupeKey && state.notifications.some((n) => n.dedupeKey === input.dedupeKey)) return;
+    const n: Notification = {
+      ...input,
+      id: `ntf-${Math.random().toString(36).slice(2, 8)}`,
+      read: false,
+      createdAt: new Date().toISOString(),
+    };
+    state = { ...state, notifications: [n, ...state.notifications] };
+    emit();
+    // "Push" feel for the currently signed-in role.
+    if (state.role === input.recipientRole) {
+      toast(input.title, { description: input.body });
+      notify(input.title, input.body);
+    }
+  },
+  markAllRead(role: Role) {
+    state = {
+      ...state,
+      notifications: state.notifications.map((n) =>
+        n.recipientRole === role ? { ...n, read: true } : n,
+      ),
+    };
+    emit();
   },
 };
+
+export const getNotifications = (role: Role, recipientId: string) =>
+  state.notifications.filter((n) => n.recipientRole === role && n.recipientId === recipientId);
+
+export const getUnreadCount = (role: Role, recipientId: string) =>
+  getNotifications(role, recipientId).filter((n) => !n.read).length;
+
+let remindersSeeded = false;
+export function seedUpcomingReminders() {
+  if (remindersSeeded) return;
+  remindersSeeded = true;
+  const now = Date.now();
+  const horizon = now + 1000 * 60 * 60 * 24 * 3;
+  for (const op of OPPORTUNITIES) {
+    const t = new Date(op.date).getTime();
+    if (t >= now && t <= horizon) {
+      actions.pushNotification({
+        recipientRole: "student",
+        recipientId: STUDENT.id,
+        kind: "upcoming",
+        title: "Upcoming community service",
+        body: `${op.title} on ${new Date(op.date).toLocaleDateString()} at ${op.location}`,
+        href: "/app/home",
+        dedupeKey: `upcoming:${op.id}`,
+      });
+    }
+  }
+  // Demo fallback: if no upcoming match, still surface one reminder for the nearest opportunity.
+  if (state.notifications.every((n) => n.kind !== "upcoming") && OPPORTUNITIES[0]) {
+    const op = OPPORTUNITIES[0];
+    actions.pushNotification({
+      recipientRole: "student",
+      recipientId: STUDENT.id,
+      kind: "upcoming",
+      title: "Upcoming community service",
+      body: `${op.title} on ${new Date(op.date).toLocaleDateString()} at ${op.location}`,
+      href: "/app/home",
+      dedupeKey: `upcoming:${op.id}`,
+    });
+  }
+}
 
 export const getStudent = (id = state.currentStudentId): Student =>
   ROSTER.find((s) => s.id === id) ?? STUDENT;
