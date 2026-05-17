@@ -1,7 +1,7 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { AppHeader } from "@/components/AppHeader";
 import { actions, getAdviser, getRoster, useStore } from "@/lib/mock-data";
-import { LogOut } from "lucide-react";
+import { ChevronRight, CheckCircle2, LogOut } from "lucide-react";
 
 export const Route = createFileRoute("/adviser/profile")({
   head: () => ({ meta: [{ title: "Profile — SERVELOG" }] }),
@@ -37,7 +37,18 @@ function AdviserProfile() {
           <Stat label="Rejected" value={rejected} />
         </div>
 
-        <div className="mt-6 rounded-2xl border border-border bg-card p-4">
+        <Link
+          to="/adviser/verified"
+          className="mt-6 flex items-center justify-between rounded-2xl border border-border bg-card p-4 transition hover:border-primary"
+        >
+          <span className="flex items-center gap-2 text-sm">
+            <CheckCircle2 className="h-4 w-4 text-success" />
+            <span className="font-medium">Verified history</span>
+          </span>
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+        </Link>
+
+        <div className="mt-3 rounded-2xl border border-border bg-card p-4">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Assigned students</p>
           <p className="mt-1 text-2xl font-semibold">{getRoster().length}</p>
         </div>

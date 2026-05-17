@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppHeader } from "@/components/AppHeader";
 import { useStore, getRoster } from "@/lib/mock-data";
-import { AlertTriangle, ChevronRight } from "lucide-react";
+import { AlertTriangle, ChevronRight, CheckCircle2 } from "lucide-react";
 
 export const Route = createFileRoute("/adviser/queue")({
   head: () => ({ meta: [{ title: "Review Queue — SERVELOG" }] }),
@@ -18,6 +18,17 @@ function Queue() {
     <>
       <AppHeader title="Review queue" subtitle={`${pending.length} pending · ${flagged} flagged`} />
       <div className="space-y-2 px-5 py-5">
+        <Link
+          to="/adviser/verified"
+          className="flex items-center justify-between rounded-2xl border border-border bg-card p-3 transition hover:border-primary"
+        >
+          <span className="flex items-center gap-2 text-sm">
+            <CheckCircle2 className="h-4 w-4 text-success" />
+            <span className="font-medium">Verified history</span>
+            <span className="text-xs text-muted-foreground">approved & rejected</span>
+          </span>
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+        </Link>
         {pending.length === 0 && (
           <p className="rounded-2xl border border-dashed border-border p-6 text-center text-xs text-muted-foreground">All caught up.</p>
         )}
