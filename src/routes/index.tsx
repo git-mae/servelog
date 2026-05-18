@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { GraduationCap, ShieldCheck, Sprout } from "lucide-react";
-import { actions } from "@/lib/mock-data";
+import { GraduationCap, ShieldCheck, Sprout, Building2 } from "lucide-react";
+import { actions, type Role } from "@/lib/mock-data";
 import { PhoneFrame } from "@/components/PhoneFrame";
 
 export const Route = createFileRoute("/")({
@@ -15,11 +15,17 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
+const DEST: Record<Role, string> = {
+  student: "/app/home",
+  adviser: "/adviser/queue",
+  admin: "/admin/clearance",
+};
+
 function Landing() {
   const navigate = useNavigate();
-  const pick = (role: "student" | "adviser") => {
+  const pick = (role: Role) => {
     actions.setRole(role);
-    navigate({ to: role === "student" ? "/app/home" : "/adviser/queue" });
+    navigate({ to: DEST[role] });
   };
   return (
     <PhoneFrame>
@@ -68,6 +74,22 @@ function Landing() {
               <div>
                 <p className="font-medium">Adviser</p>
                 <p className="text-xs text-muted-foreground">Verify & approve submissions</p>
+              </div>
+            </div>
+            <span className="text-primary opacity-0 transition group-hover:opacity-100">→</span>
+          </button>
+
+          <button
+            onClick={() => pick("admin")}
+            className="group flex w-full items-center justify-between rounded-2xl border border-border bg-card p-5 text-left transition hover:border-primary"
+          >
+            <div className="flex items-center gap-4">
+              <div className="grid h-11 w-11 place-items-center rounded-xl bg-secondary text-primary">
+                <Building2 className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="font-medium">Administrator</p>
+                <p className="text-xs text-muted-foreground">Post activities, log violations, clear students</p>
               </div>
             </div>
             <span className="text-primary opacity-0 transition group-hover:opacity-100">→</span>

@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AdviserRouteImport } from './routes/adviser'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppReportsRouteImport } from './routes/app.reports'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
@@ -22,6 +23,10 @@ import { Route as AdviserVerifiedRouteImport } from './routes/adviser.verified'
 import { Route as AdviserStudentsRouteImport } from './routes/adviser.students'
 import { Route as AdviserQueueRouteImport } from './routes/adviser.queue'
 import { Route as AdviserProfileRouteImport } from './routes/adviser.profile'
+import { Route as AdminViolationsRouteImport } from './routes/admin.violations'
+import { Route as AdminProfileRouteImport } from './routes/admin.profile'
+import { Route as AdminOpportunitiesRouteImport } from './routes/admin.opportunities'
+import { Route as AdminClearanceRouteImport } from './routes/admin.clearance'
 import { Route as AdviserReviewIdRouteImport } from './routes/adviser.review.$id'
 
 const LoginRoute = LoginRouteImport.update({
@@ -37,6 +42,11 @@ const AppRoute = AppRouteImport.update({
 const AdviserRoute = AdviserRouteImport.update({
   id: '/adviser',
   path: '/adviser',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -89,6 +99,26 @@ const AdviserProfileRoute = AdviserProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AdviserRoute,
 } as any)
+const AdminViolationsRoute = AdminViolationsRouteImport.update({
+  id: '/violations',
+  path: '/violations',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProfileRoute = AdminProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOpportunitiesRoute = AdminOpportunitiesRouteImport.update({
+  id: '/opportunities',
+  path: '/opportunities',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminClearanceRoute = AdminClearanceRouteImport.update({
+  id: '/clearance',
+  path: '/clearance',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdviserReviewIdRoute = AdviserReviewIdRouteImport.update({
   id: '/review/$id',
   path: '/review/$id',
@@ -97,9 +127,14 @@ const AdviserReviewIdRoute = AdviserReviewIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/adviser': typeof AdviserRouteWithChildren
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/admin/clearance': typeof AdminClearanceRoute
+  '/admin/opportunities': typeof AdminOpportunitiesRoute
+  '/admin/profile': typeof AdminProfileRoute
+  '/admin/violations': typeof AdminViolationsRoute
   '/adviser/profile': typeof AdviserProfileRoute
   '/adviser/queue': typeof AdviserQueueRoute
   '/adviser/students': typeof AdviserStudentsRoute
@@ -113,9 +148,14 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/adviser': typeof AdviserRouteWithChildren
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/admin/clearance': typeof AdminClearanceRoute
+  '/admin/opportunities': typeof AdminOpportunitiesRoute
+  '/admin/profile': typeof AdminProfileRoute
+  '/admin/violations': typeof AdminViolationsRoute
   '/adviser/profile': typeof AdviserProfileRoute
   '/adviser/queue': typeof AdviserQueueRoute
   '/adviser/students': typeof AdviserStudentsRoute
@@ -130,9 +170,14 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/adviser': typeof AdviserRouteWithChildren
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/admin/clearance': typeof AdminClearanceRoute
+  '/admin/opportunities': typeof AdminOpportunitiesRoute
+  '/admin/profile': typeof AdminProfileRoute
+  '/admin/violations': typeof AdminViolationsRoute
   '/adviser/profile': typeof AdviserProfileRoute
   '/adviser/queue': typeof AdviserQueueRoute
   '/adviser/students': typeof AdviserStudentsRoute
@@ -148,9 +193,14 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/adviser'
     | '/app'
     | '/login'
+    | '/admin/clearance'
+    | '/admin/opportunities'
+    | '/admin/profile'
+    | '/admin/violations'
     | '/adviser/profile'
     | '/adviser/queue'
     | '/adviser/students'
@@ -164,9 +214,14 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/adviser'
     | '/app'
     | '/login'
+    | '/admin/clearance'
+    | '/admin/opportunities'
+    | '/admin/profile'
+    | '/admin/violations'
     | '/adviser/profile'
     | '/adviser/queue'
     | '/adviser/students'
@@ -180,9 +235,14 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/adviser'
     | '/app'
     | '/login'
+    | '/admin/clearance'
+    | '/admin/opportunities'
+    | '/admin/profile'
+    | '/admin/violations'
     | '/adviser/profile'
     | '/adviser/queue'
     | '/adviser/students'
@@ -197,6 +257,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AdviserRoute: typeof AdviserRouteWithChildren
   AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
@@ -223,6 +284,13 @@ declare module '@tanstack/react-router' {
       path: '/adviser'
       fullPath: '/adviser'
       preLoaderRoute: typeof AdviserRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -295,6 +363,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdviserProfileRouteImport
       parentRoute: typeof AdviserRoute
     }
+    '/admin/violations': {
+      id: '/admin/violations'
+      path: '/violations'
+      fullPath: '/admin/violations'
+      preLoaderRoute: typeof AdminViolationsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/profile': {
+      id: '/admin/profile'
+      path: '/profile'
+      fullPath: '/admin/profile'
+      preLoaderRoute: typeof AdminProfileRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/opportunities': {
+      id: '/admin/opportunities'
+      path: '/opportunities'
+      fullPath: '/admin/opportunities'
+      preLoaderRoute: typeof AdminOpportunitiesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/clearance': {
+      id: '/admin/clearance'
+      path: '/clearance'
+      fullPath: '/admin/clearance'
+      preLoaderRoute: typeof AdminClearanceRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/adviser/review/$id': {
       id: '/adviser/review/$id'
       path: '/review/$id'
@@ -304,6 +400,22 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AdminRouteChildren {
+  AdminClearanceRoute: typeof AdminClearanceRoute
+  AdminOpportunitiesRoute: typeof AdminOpportunitiesRoute
+  AdminProfileRoute: typeof AdminProfileRoute
+  AdminViolationsRoute: typeof AdminViolationsRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminClearanceRoute: AdminClearanceRoute,
+  AdminOpportunitiesRoute: AdminOpportunitiesRoute,
+  AdminProfileRoute: AdminProfileRoute,
+  AdminViolationsRoute: AdminViolationsRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface AdviserRouteChildren {
   AdviserProfileRoute: typeof AdviserProfileRoute
@@ -344,6 +456,7 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
   AdviserRoute: AdviserRouteWithChildren,
   AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
