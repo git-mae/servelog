@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { actions } from "@/lib/mock-data";
+import { actions, type Role } from "@/lib/mock-data";
 import { PhoneFrame } from "@/components/PhoneFrame";
 import { Sprout } from "lucide-react";
 
@@ -9,15 +9,27 @@ export const Route = createFileRoute("/login")({
   component: LoginPage,
 });
 
+const DEST: Record<Role, string> = {
+  student: "/app/home",
+  adviser: "/adviser/queue",
+  admin: "/admin/clearance",
+};
+
+const EMAIL: Record<Role, string> = {
+  student: "patrizia.rodriguez@neu.edu.ph",
+  adviser: "t.alcantara@neu.edu.ph",
+  admin: "r.bautista@neu.edu.ph",
+};
+
 function LoginPage() {
   const nav = useNavigate();
-  const [role, setRole] = useState<"student" | "adviser">("student");
-  const [email, setEmail] = useState("patrizia.rodriguez@neu.edu.ph");
+  const [role, setRole] = useState<Role>("student");
+  const [email, setEmail] = useState(EMAIL.student);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     actions.setRole(role);
-    nav({ to: role === "student" ? "/app/home" : "/adviser/queue" });
+    nav({ to: DEST[role] });
   };
 
   return (
@@ -33,18 +45,15 @@ function LoginPage() {
         </div>
 
         <form onSubmit={submit} className="mt-8 space-y-4">
-          <div className="grid grid-cols-2 gap-2 rounded-xl bg-secondary p-1">
-            {(["student", "adviser"] as const).map((r) => (
+          <div className="grid grid-cols-3 gap-2 rounded-xl bg-secondary p-1">
+            {(["student", "adviser", "admin"] as const).map((r) => (
               <button
                 key={r}
                 type="button"
-                onClick={() => {
-                  setRole(r);
-                  setEmail(r === "student" ? "patrizia.rodriguez@neu.edu.ph" : "t.alcantara@neu.edu.ph");
-                }}
-                className={`rounded-lg px-3 py-2 text-sm font-medium transition ${role === r ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}
+                onClick={() => { setRole(r); setEmail(EMAIL[r]); }}
+                className={`rounded-lg px-2 py-2 text-xs font-medium transition ${role === r ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}
               >
-                {r === "student" ? "Student" : "Adviser"}
+                {r === "student" ? "Student" : r === "adviser" ? "Adviser" : "Admin"}
               </button>
             ))}
           </div>

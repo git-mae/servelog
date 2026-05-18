@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Home, PlusCircle, ClipboardList, FileText, User, Inbox, Users, CheckCircle2 } from "lucide-react";
+import { Home, PlusCircle, ClipboardList, FileText, User, Inbox, Users, CheckCircle2, ShieldCheck, Megaphone, AlertOctagon } from "lucide-react";
 
 const studentItems = [
   { to: "/app/home", label: "Home", icon: Home },
@@ -16,11 +16,19 @@ const adviserItems = [
   { to: "/adviser/profile", label: "Profile", icon: User },
 ] as const;
 
-export function BottomNav({ role }: { role: "student" | "adviser" }) {
-  const items = role === "student" ? studentItems : adviserItems;
+const adminItems = [
+  { to: "/admin/clearance", label: "Clearance", icon: ShieldCheck },
+  { to: "/admin/opportunities", label: "Posts", icon: Megaphone },
+  { to: "/admin/violations", label: "Violations", icon: AlertOctagon },
+  { to: "/admin/profile", label: "Profile", icon: User },
+] as const;
+
+export function BottomNav({ role }: { role: "student" | "adviser" | "admin" }) {
+  const items = role === "student" ? studentItems : role === "adviser" ? adviserItems : adminItems;
+  const cols = role === "student" ? "grid-cols-5" : "grid-cols-4";
   return (
     <nav className="sticky bottom-0 z-30 border-t border-border bg-card/95 backdrop-blur no-print">
-      <ul className={`grid ${role === "student" ? "grid-cols-5" : "grid-cols-4"}`}>
+      <ul className={`grid ${cols}`}>
         {items.map(({ to, label, icon: Icon }) => (
           <li key={to} className="min-w-0">
             <Link
