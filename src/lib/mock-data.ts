@@ -3,7 +3,7 @@ import { useSyncExternalStore } from "react";
 import { toast } from "sonner";
 import { notify } from "./browser-notifications";
 
-export type Role = "student" | "adviser";
+export type Role = "student" | "adviser" | "admin";
 
 export type SubmissionStatus = "pending" | "approved" | "rejected";
 
@@ -31,6 +31,8 @@ export interface Student {
   email: string;
   violation: string;
   requiredHours: number;
+  clearedAt?: string;
+  clearanceNote?: string;
 }
 
 export interface Adviser {
@@ -38,6 +40,13 @@ export interface Adviser {
   name: string;
   email: string;
   department: string;
+}
+
+export interface Admin {
+  id: string;
+  name: string;
+  email: string;
+  office: string;
 }
 
 export interface Opportunity {
@@ -67,7 +76,14 @@ const ADVISER: Adviser = {
   department: "College of Informatics & Computing Studies",
 };
 
-const ROSTER: Student[] = [
+const ADMIN: Admin = {
+  id: "adm-001",
+  name: "Dean Romulo P. Bautista",
+  email: "r.bautista@neu.edu.ph",
+  office: "Office of Student Affairs",
+};
+
+const INITIAL_ROSTER: Student[] = [
   STUDENT,
   { id: "stu-002", name: "Andrea Delos Santos", studentNo: "2022-00789", course: "BS Information Technology", email: "andrea.ds@neu.edu.ph", violation: "Tardiness (chronic)", requiredHours: 20 },
   { id: "stu-003", name: "Rochel Mae Arcellas", studentNo: "2022-00533", course: "BS Information Technology", email: "rochel.a@neu.edu.ph", violation: "Improper ID", requiredHours: 15 },
@@ -75,7 +91,7 @@ const ROSTER: Student[] = [
   { id: "stu-005", name: "Janelle Santos", studentNo: "2023-00220", course: "BS Information Systems", email: "janelle.s@neu.edu.ph", violation: "Cafeteria misconduct", requiredHours: 10 },
 ];
 
-const OPPORTUNITIES: Opportunity[] = [
+const INITIAL_OPPORTUNITIES: Opportunity[] = [
   { id: "op-1", title: "Brigada Eskwela: Classroom Cleanup", organizer: "NEU Outreach Office", date: "2026-06-04", location: "Bagong Silangan Elementary", hours: 6, tag: "Education" },
   { id: "op-2", title: "Coastal Cleanup Drive", organizer: "Green NEU Org", date: "2026-06-12", location: "Manila Baywalk", hours: 5, tag: "Environment" },
   { id: "op-3", title: "Tech Tutoring for Seniors", organizer: "CICS Student Council", date: "2026-06-18", location: "NEU Centennial Hall", hours: 4, tag: "Tech" },
@@ -91,7 +107,7 @@ const seedSubs = (): Submission[] => [
   { id: "sub-007", studentId: "stu-004", title: "Community Tutorial", organizer: "CICS SC", location: "Brgy. Holy Spirit", date: "2026-05-01", hours: 4, description: "Tutored grade-school kids in math.", status: "rejected", adviserComment: "Proof image is unclear. Please re-upload a higher quality photo with visible date.", createdAt: "2026-05-02T11:00:00Z" },
 ];
 
-export type NotifKind = "submitted" | "approved" | "rejected" | "upcoming";
+export type NotifKind = "submitted" | "approved" | "rejected" | "upcoming" | "ready-clearance" | "cleared" | "violation";
 
 export interface Notification {
   id: string;
@@ -111,16 +127,22 @@ interface State {
   role: Role | null;
   currentStudentId: string;
   currentAdviserId: string;
+  currentAdminId: string;
   submissions: Submission[];
   notifications: Notification[];
+  roster: Student[];
+  opportunities: Opportunity[];
 }
 
 let state: State = {
   role: (typeof window !== "undefined" ? (localStorage.getItem("servelog:role") as Role | null) : null),
   currentStudentId: "stu-001",
   currentAdviserId: "adv-001",
+  currentAdminId: "adm-001",
   submissions: seedSubs(),
   notifications: [],
+  roster: INITIAL_ROSTER,
+  opportunities: INITIAL_OPPORTUNITIES,
 };
 
 const listeners = new Set<() => void>();
@@ -194,7 +216,89 @@ export const actions = {
           : `"${target.title}" was rejected${comment ? ` — ${comment}` : ""}`,
         href: "/app/history",
       });
+      // If approval pushes the student over required hours, alert admin for clearance.
+      if (status === "approved") {
+        const stu = getStudent(target.studentId);
+        const totals = studentTotals(target.studentId);
+        if (!stu.clearedAt && totals.approved >= stu.requiredHours) {
+          actions.pushNotification({
+            recipientRole: "admin",
+            recipientId: ADMIN.id,
+            kind: "ready-clearance",
+            title: "Student ready for clearance",
+            body: `${stu.name} reached ${totals.approved}/${stu.requiredHours} hrs`,
+            href: "/admin/clearance",
+            dedupeKey: `clearance:${stu.id}`,
+          });
+        }
+      }
     }
+  },
+  addOpportunity(input: Omit<Opportunity, "id">) {
+    const op: Opportunity = { ...input, id: `op-${Math.random().toString(36).slice(2, 7)}` };
+    state = { ...state, opportunities: [op, ...state.opportunities] };
+    emit();
+    // Notify student of the new opportunity.
+    actions.pushNotification({
+      recipientRole: "student",
+      recipientId: STUDENT.id,
+      kind: "upcoming",
+      title: "New community service posted",
+      body: `${op.title} on ${new Date(op.date).toLocaleDateString()} at ${op.location}`,
+      href: "/app/home",
+      dedupeKey: `new-op:${op.id}`,
+    });
+    return op;
+  },
+  addViolation(input: { name: string; studentNo: string; course: string; email: string; violation: string; requiredHours: number }) {
+    // Update existing student by studentNo, or add a new one.
+    const existing = state.roster.find((s) => s.studentNo === input.studentNo);
+    if (existing) {
+      state = {
+        ...state,
+        roster: state.roster.map((s) =>
+          s.id === existing.id
+            ? { ...s, violation: input.violation, requiredHours: input.requiredHours, clearedAt: undefined, clearanceNote: undefined }
+            : s,
+        ),
+      };
+      emit();
+      actions.pushNotification({
+        recipientRole: "student",
+        recipientId: existing.id,
+        kind: "violation",
+        title: "Violation record updated",
+        body: `${input.violation} · ${input.requiredHours} hrs required`,
+        href: "/app/profile",
+      });
+      return existing;
+    }
+    const stu: Student = {
+      id: `stu-${Math.random().toString(36).slice(2, 7)}`,
+      ...input,
+    };
+    state = { ...state, roster: [...state.roster, stu] };
+    emit();
+    return stu;
+  },
+  clearStudent(studentId: string, note?: string) {
+    const stu = state.roster.find((s) => s.id === studentId);
+    if (!stu) return;
+    state = {
+      ...state,
+      roster: state.roster.map((s) =>
+        s.id === studentId ? { ...s, clearedAt: new Date().toISOString(), clearanceNote: note } : s,
+      ),
+    };
+    emit();
+    actions.pushNotification({
+      recipientRole: "student",
+      recipientId: studentId,
+      kind: "cleared",
+      title: "You're cleared 🎉",
+      body: note ? note : "Community service requirement marked complete.",
+      href: "/app/profile",
+    });
   },
   pushNotification(input: Omit<Notification, "id" | "read" | "createdAt">) {
     if (input.dedupeKey && state.notifications.some((n) => n.dedupeKey === input.dedupeKey)) return;
@@ -206,7 +310,6 @@ export const actions = {
     };
     state = { ...state, notifications: [n, ...state.notifications] };
     emit();
-    // "Push" feel for the currently signed-in role.
     if (state.role === input.recipientRole) {
       toast(input.title, { description: input.body });
       notify(input.title, input.body);
@@ -235,7 +338,7 @@ export function seedUpcomingReminders() {
   remindersSeeded = true;
   const now = Date.now();
   const horizon = now + 1000 * 60 * 60 * 24 * 3;
-  for (const op of OPPORTUNITIES) {
+  for (const op of state.opportunities) {
     const t = new Date(op.date).getTime();
     if (t >= now && t <= horizon) {
       actions.pushNotification({
@@ -249,9 +352,8 @@ export function seedUpcomingReminders() {
       });
     }
   }
-  // Demo fallback: if no upcoming match, still surface one reminder for the nearest opportunity.
-  if (state.notifications.every((n) => n.kind !== "upcoming") && OPPORTUNITIES[0]) {
-    const op = OPPORTUNITIES[0];
+  if (state.notifications.every((n) => n.kind !== "upcoming") && state.opportunities[0]) {
+    const op = state.opportunities[0];
     actions.pushNotification({
       recipientRole: "student",
       recipientId: STUDENT.id,
@@ -265,13 +367,15 @@ export function seedUpcomingReminders() {
 }
 
 export const getStudent = (id = state.currentStudentId): Student =>
-  ROSTER.find((s) => s.id === id) ?? STUDENT;
+  state.roster.find((s) => s.id === id) ?? STUDENT;
 
 export const getAdviser = (): Adviser => ADVISER;
 
-export const getRoster = (): Student[] => ROSTER;
+export const getAdmin = (): Admin => ADMIN;
 
-export const getOpportunities = (): Opportunity[] => OPPORTUNITIES;
+export const getRoster = (): Student[] => state.roster;
+
+export const getOpportunities = (): Opportunity[] => state.opportunities;
 
 export const findSimilar = (sub: Submission): Submission | undefined =>
   state.submissions.find(
