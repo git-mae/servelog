@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { Bell, CheckCircle2, XCircle, Inbox, CalendarClock } from "lucide-react";
+import { Bell, CheckCircle2, XCircle, Inbox, CalendarClock, ShieldCheck, AlertOctagon, Award } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -15,6 +15,9 @@ const ICONS: Record<NotifKind, React.ComponentType<{ className?: string }>> = {
   approved: CheckCircle2,
   rejected: XCircle,
   upcoming: CalendarClock,
+  "ready-clearance": ShieldCheck,
+  cleared: Award,
+  violation: AlertOctagon,
 };
 
 const TONE: Record<NotifKind, string> = {
@@ -22,6 +25,9 @@ const TONE: Record<NotifKind, string> = {
   approved: "text-success bg-success/10",
   rejected: "text-destructive bg-destructive/10",
   upcoming: "text-warning bg-warning/10",
+  "ready-clearance": "text-primary bg-primary/10",
+  cleared: "text-success bg-success/10",
+  violation: "text-destructive bg-destructive/10",
 };
 
 export function NotificationBell({ role, recipientId }: { role: Role; recipientId: string }) {
