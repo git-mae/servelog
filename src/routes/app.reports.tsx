@@ -72,7 +72,7 @@ function Reports() {
             <div className="border-t border-border pt-1.5 text-center">Student Signature</div>
           </div>
           <div>
-            <div className="border-t border-border pt-1.5 text-center">Adviser Signature</div>
+            <div className="border-t border-border pt-1.5 text-center">OSD Signature</div>
           </div>
         </div>
       </article>

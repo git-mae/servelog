@@ -56,8 +56,8 @@ function History() {
             {s.flagged && s.status === "pending" && (
               <p className="mt-2 rounded-lg bg-warning/10 px-2.5 py-1.5 text-[11px] text-warning">AI flagged: possible duplicate</p>
             )}
-            {s.adviserComment && (
-              <p className="mt-2 rounded-lg bg-destructive/5 px-2.5 py-1.5 text-[11px] text-destructive">Adviser: {s.adviserComment}</p>
+            {s.reviewerComment && (
+              <p className="mt-2 rounded-lg bg-destructive/5 px-2.5 py-1.5 text-[11px] text-destructive">OSD: {s.reviewerComment}</p>
             )}
           </article>
         ))}
