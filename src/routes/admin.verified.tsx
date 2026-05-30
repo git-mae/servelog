@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { useStore, getRoster } from "@/lib/mock-data";
 
-export const Route = createFileRoute("/adviser/verified")({
+export const Route = createFileRoute("/admin/verified")({
   head: () => ({ meta: [{ title: "Verified — SERVELOG" }] }),
   component: Verified,
 });
@@ -31,7 +31,7 @@ function Verified() {
                 </div>
                 <span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider ${s.status === "approved" ? "bg-success/15 text-success" : "bg-destructive/10 text-destructive"}`}>{s.status}</span>
               </div>
-              {s.adviserComment && <p className="mt-2 text-[11px] text-muted-foreground">Note: {s.adviserComment}</p>}
+              {s.reviewerComment && <p className="mt-2 text-[11px] text-muted-foreground">Note: {s.reviewerComment}</p>}
             </article>
           );
         })}

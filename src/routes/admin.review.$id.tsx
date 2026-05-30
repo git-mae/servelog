@@ -5,7 +5,7 @@ import { actions, findSimilar, getRoster, useStore } from "@/lib/mock-data";
 import { AlertTriangle, ArrowLeft, Calendar, Clock, MapPin } from "lucide-react";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/adviser/review/$id")({
+export const Route = createFileRoute("/admin/review/$id")({
   head: () => ({ meta: [{ title: "Review Submission — SERVELOG" }] }),
   component: Review,
 });
@@ -20,7 +20,7 @@ function Review() {
   if (!sub) {
     return (
       <div className="p-6 text-sm text-muted-foreground">
-        Submission not found. <Link to="/adviser/queue" className="text-primary">Back to queue</Link>
+        Submission not found. <Link to="/admin/queue" className="text-primary">Back to queue</Link>
       </div>
     );
   }
@@ -32,13 +32,13 @@ function Review() {
   const approve = () => {
     actions.decide(sub.id, "approved");
     toast.success("Submission approved.");
-    nav({ to: "/adviser/queue" });
+    nav({ to: "/admin/queue" });
   };
   const reject = () => {
     if (!comment.trim()) { toast.error("Please add a comment for the student."); return; }
     actions.decide(sub.id, "rejected", comment.trim());
     toast.success("Submission rejected with comment.");
-    nav({ to: "/adviser/queue" });
+    nav({ to: "/admin/queue" });
   };
 
   return (
@@ -47,7 +47,7 @@ function Review() {
         title="Review"
         subtitle={stu?.name}
         right={
-          <Link to="/adviser/queue" className="rounded-xl border border-border bg-card p-1.5 hover:border-primary">
+          <Link to="/admin/queue" className="rounded-xl border border-border bg-card p-1.5 hover:border-primary">
             <ArrowLeft className="h-4 w-4" />
           </Link>
         }

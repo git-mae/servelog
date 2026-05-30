@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { GraduationCap, ShieldCheck, Sprout, Building2 } from "lucide-react";
+import { GraduationCap, Sprout, Building2 } from "lucide-react";
 import { actions, type Role } from "@/lib/mock-data";
 import { PhoneFrame } from "@/components/PhoneFrame";
 
@@ -17,8 +17,7 @@ export const Route = createFileRoute("/")({
 
 const DEST: Record<Role, string> = {
   student: "/app/home",
-  adviser: "/adviser/queue",
-  admin: "/admin/clearance",
+  admin: "/admin/queue",
 };
 
 function Landing() {
@@ -40,7 +39,7 @@ function Landing() {
             Track every <span className="text-primary">service hour.</span>
           </h1>
           <p className="mt-3 text-sm text-muted-foreground">
-            A quiet, paperless way for New Era University students to complete community service requirements — and for advisers to verify them.
+            A quiet, paperless way for New Era University students to complete community service requirements — verified by the Office of Student Discipline.
           </p>
         </div>
 
@@ -64,22 +63,6 @@ function Landing() {
           </button>
 
           <button
-            onClick={() => pick("adviser")}
-            className="group flex w-full items-center justify-between rounded-2xl border border-border bg-card p-5 text-left transition hover:border-primary"
-          >
-            <div className="flex items-center gap-4">
-              <div className="grid h-11 w-11 place-items-center rounded-xl bg-secondary text-primary">
-                <ShieldCheck className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="font-medium">Adviser</p>
-                <p className="text-xs text-muted-foreground">Verify & approve submissions</p>
-              </div>
-            </div>
-            <span className="text-primary opacity-0 transition group-hover:opacity-100">→</span>
-          </button>
-
-          <button
             onClick={() => pick("admin")}
             className="group flex w-full items-center justify-between rounded-2xl border border-border bg-card p-5 text-left transition hover:border-primary"
           >
@@ -88,8 +71,8 @@ function Landing() {
                 <Building2 className="h-5 w-5" />
               </div>
               <div>
-                <p className="font-medium">Administrator</p>
-                <p className="text-xs text-muted-foreground">Post activities, log violations, clear students</p>
+                <p className="font-medium">Office of Student Discipline</p>
+                <p className="text-xs text-muted-foreground">Verify hours, post activities, issue clearance</p>
               </div>
             </div>
             <span className="text-primary opacity-0 transition group-hover:opacity-100">→</span>

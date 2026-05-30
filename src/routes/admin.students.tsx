@@ -1,9 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { getRoster, studentTotals, useStore } from "@/lib/mock-data";
+import { AlertOctagon } from "lucide-react";
 
-export const Route = createFileRoute("/adviser/students")({
+export const Route = createFileRoute("/admin/students")({
   head: () => ({ meta: [{ title: "Students — SERVELOG" }] }),
   component: Students,
 });
@@ -11,7 +12,8 @@ export const Route = createFileRoute("/adviser/students")({
 type Filter = "all" | "at-risk" | "on-track" | "done";
 
 function Students() {
-  useStore((s) => s.submissions); // re-render
+  useStore((s) => s.submissions);
+  useStore((s) => s.roster);
   const roster = getRoster();
   const [filter, setFilter] = useState<Filter>("all");
 
@@ -32,9 +34,16 @@ function Students() {
 
   return (
     <>
-      <AppHeader title="Students" subtitle={`${roster.length} assigned`} />
+      <AppHeader title="Students" subtitle={`${roster.length} on record`} />
       <div className="px-5 pt-4">
-        <div className="flex gap-1 overflow-x-auto rounded-xl bg-secondary p-1">
+        <Link
+          to="/admin/violations"
+          className="flex items-center justify-between rounded-2xl border border-border bg-card px-4 py-3 text-sm transition hover:border-primary"
+        >
+          <span className="flex items-center gap-2"><AlertOctagon className="h-4 w-4 text-destructive" /> Log a violation</span>
+          <span className="text-xs text-muted-foreground">Add / update</span>
+        </Link>
+        <div className="mt-4 flex gap-1 overflow-x-auto rounded-xl bg-secondary p-1">
           {tabs.map((t) => (
             <button key={t.key} onClick={() => setFilter(t.key)} className={`flex-1 whitespace-nowrap rounded-lg px-3 py-2 text-xs font-medium transition ${filter === t.key ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}>
               {t.label}

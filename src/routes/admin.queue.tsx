@@ -1,19 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMemo } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { useStore, getRoster } from "@/lib/mock-data";
 import { AlertTriangle, ChevronRight } from "lucide-react";
 
-export const Route = createFileRoute("/adviser/queue")({
+export const Route = createFileRoute("/admin/queue")({
   head: () => ({ meta: [{ title: "Review Queue — SERVELOG" }] }),
   component: Queue,
 });
 
 function Queue() {
-  const subs = useStore((s) => s.submissions);
+  const all = useStore((s) => s.submissions);
   const roster = getRoster();
-  const pending = subs.filter((s) => s.status === "pending");
-  const approved = subs.filter((s) => s.status === "approved").length;
-  const rejected = subs.filter((s) => s.status === "rejected").length;
+  const pending = useMemo(() => all.filter((s) => s.status === "pending"), [all]);
+  const approved = useMemo(() => all.filter((s) => s.status === "approved").length, [all]);
+  const rejected = useMemo(() => all.filter((s) => s.status === "rejected").length, [all]);
   const flagged = pending.filter((s) => s.flagged).length;
 
   return (
@@ -26,10 +27,10 @@ function Queue() {
           <Stat label="Rejected" value={rejected} />
         </div>
 
-        <div className="rounded-2xl border border-border bg-card p-4">
-          <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Assigned students</p>
-          <p className="mt-1 text-2xl font-semibold">{roster.length}</p>
-        </div>
+        <Link to="/admin/verified" className="flex items-center justify-between rounded-2xl border border-border bg-card px-4 py-3 text-sm transition hover:border-primary">
+          <span>Verified history</span>
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+        </Link>
 
         <div className="space-y-2">
           {pending.length === 0 && (
@@ -38,7 +39,7 @@ function Queue() {
           {pending.map((s) => {
             const stu = roster.find((r) => r.id === s.studentId);
             return (
-              <Link key={s.id} to="/adviser/review/$id" params={{ id: s.id }} className="block rounded-2xl border border-border bg-card p-4 transition hover:border-primary">
+              <Link key={s.id} to="/admin/review/$id" params={{ id: s.id }} className="block rounded-2xl border border-border bg-card p-4 transition hover:border-primary">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium">{s.title}</p>
