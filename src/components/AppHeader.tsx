@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { NotificationBell } from "./NotificationBell";
-import { useStore, getStudent, getAdviser, getAdmin } from "@/lib/mock-data";
+import { useStore, getStudent, getAdmin } from "@/lib/mock-data";
 
 export function AppHeader({
   title,
@@ -12,8 +12,7 @@ export function AppHeader({
   right?: ReactNode;
 }) {
   const role = useStore((s) => s.role);
-  const recipientId =
-    role === "adviser" ? getAdviser().id : role === "admin" ? getAdmin().id : getStudent().id;
+  const recipientId = role === "admin" ? getAdmin().id : getStudent().id;
 
   return (
     <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-border bg-background/85 px-5 py-4 backdrop-blur no-print">

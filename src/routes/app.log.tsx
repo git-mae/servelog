@@ -45,16 +45,16 @@ function LogActivity() {
       proofDataUrl: form.proofDataUrl,
     });
     if (sub.flagged) {
-      toast.warning("AI flagged a possible duplicate. Adviser will review carefully.");
+      toast.warning("AI flagged a possible duplicate. OSD will review carefully.");
     } else {
-      toast.success("Submitted for adviser review.");
+      toast.success("Submitted for OSD review.");
     }
     nav({ to: "/app/history" });
   };
 
   return (
     <>
-      <AppHeader title="Log activity" subtitle="Submit proof for adviser review" />
+      <AppHeader title="Log activity" subtitle="Submit proof for OSD review" />
       <form onSubmit={submit} className="space-y-4 px-5 py-5">
         <Field label="Activity title *">
           <input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. Feeding Program" className="input" />
@@ -97,7 +97,7 @@ function LogActivity() {
 
         <div className="flex items-start gap-2 rounded-2xl bg-secondary p-3 text-xs text-secondary-foreground">
           <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-          <p>AI will check this entry for possible duplicates against your previous submissions before it reaches your adviser.</p>
+          <p>AI will check this entry for possible duplicates against your previous submissions before it reaches the OSD.</p>
         </div>
 
         <button className="w-full rounded-xl bg-primary py-3 text-sm font-medium text-primary-foreground transition hover:opacity-90">

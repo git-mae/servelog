@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/app'
-import { Route as AdviserRouteImport } from './routes/adviser'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppReportsRouteImport } from './routes/app.reports'
@@ -19,15 +18,14 @@ import { Route as AppProfileRouteImport } from './routes/app.profile'
 import { Route as AppLogRouteImport } from './routes/app.log'
 import { Route as AppHomeRouteImport } from './routes/app.home'
 import { Route as AppHistoryRouteImport } from './routes/app.history'
-import { Route as AdviserVerifiedRouteImport } from './routes/adviser.verified'
-import { Route as AdviserStudentsRouteImport } from './routes/adviser.students'
-import { Route as AdviserQueueRouteImport } from './routes/adviser.queue'
-import { Route as AdviserProfileRouteImport } from './routes/adviser.profile'
 import { Route as AdminViolationsRouteImport } from './routes/admin.violations'
+import { Route as AdminVerifiedRouteImport } from './routes/admin.verified'
+import { Route as AdminStudentsRouteImport } from './routes/admin.students'
+import { Route as AdminQueueRouteImport } from './routes/admin.queue'
 import { Route as AdminProfileRouteImport } from './routes/admin.profile'
 import { Route as AdminOpportunitiesRouteImport } from './routes/admin.opportunities'
 import { Route as AdminClearanceRouteImport } from './routes/admin.clearance'
-import { Route as AdviserReviewIdRouteImport } from './routes/adviser.review.$id'
+import { Route as AdminReviewIdRouteImport } from './routes/admin.review.$id'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -37,11 +35,6 @@ const LoginRoute = LoginRouteImport.update({
 const AppRoute = AppRouteImport.update({
   id: '/app',
   path: '/app',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdviserRoute = AdviserRouteImport.update({
-  id: '/adviser',
-  path: '/adviser',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -79,29 +72,24 @@ const AppHistoryRoute = AppHistoryRouteImport.update({
   path: '/history',
   getParentRoute: () => AppRoute,
 } as any)
-const AdviserVerifiedRoute = AdviserVerifiedRouteImport.update({
-  id: '/verified',
-  path: '/verified',
-  getParentRoute: () => AdviserRoute,
-} as any)
-const AdviserStudentsRoute = AdviserStudentsRouteImport.update({
-  id: '/students',
-  path: '/students',
-  getParentRoute: () => AdviserRoute,
-} as any)
-const AdviserQueueRoute = AdviserQueueRouteImport.update({
-  id: '/queue',
-  path: '/queue',
-  getParentRoute: () => AdviserRoute,
-} as any)
-const AdviserProfileRoute = AdviserProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => AdviserRoute,
-} as any)
 const AdminViolationsRoute = AdminViolationsRouteImport.update({
   id: '/violations',
   path: '/violations',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminVerifiedRoute = AdminVerifiedRouteImport.update({
+  id: '/verified',
+  path: '/verified',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminStudentsRoute = AdminStudentsRouteImport.update({
+  id: '/students',
+  path: '/students',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminQueueRoute = AdminQueueRouteImport.update({
+  id: '/queue',
+  path: '/queue',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminProfileRoute = AdminProfileRouteImport.update({
@@ -119,146 +107,133 @@ const AdminClearanceRoute = AdminClearanceRouteImport.update({
   path: '/clearance',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdviserReviewIdRoute = AdviserReviewIdRouteImport.update({
+const AdminReviewIdRoute = AdminReviewIdRouteImport.update({
   id: '/review/$id',
   path: '/review/$id',
-  getParentRoute: () => AdviserRoute,
+  getParentRoute: () => AdminRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
-  '/adviser': typeof AdviserRouteWithChildren
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/admin/clearance': typeof AdminClearanceRoute
   '/admin/opportunities': typeof AdminOpportunitiesRoute
   '/admin/profile': typeof AdminProfileRoute
+  '/admin/queue': typeof AdminQueueRoute
+  '/admin/students': typeof AdminStudentsRoute
+  '/admin/verified': typeof AdminVerifiedRoute
   '/admin/violations': typeof AdminViolationsRoute
-  '/adviser/profile': typeof AdviserProfileRoute
-  '/adviser/queue': typeof AdviserQueueRoute
-  '/adviser/students': typeof AdviserStudentsRoute
-  '/adviser/verified': typeof AdviserVerifiedRoute
   '/app/history': typeof AppHistoryRoute
   '/app/home': typeof AppHomeRoute
   '/app/log': typeof AppLogRoute
   '/app/profile': typeof AppProfileRoute
   '/app/reports': typeof AppReportsRoute
-  '/adviser/review/$id': typeof AdviserReviewIdRoute
+  '/admin/review/$id': typeof AdminReviewIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
-  '/adviser': typeof AdviserRouteWithChildren
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/admin/clearance': typeof AdminClearanceRoute
   '/admin/opportunities': typeof AdminOpportunitiesRoute
   '/admin/profile': typeof AdminProfileRoute
+  '/admin/queue': typeof AdminQueueRoute
+  '/admin/students': typeof AdminStudentsRoute
+  '/admin/verified': typeof AdminVerifiedRoute
   '/admin/violations': typeof AdminViolationsRoute
-  '/adviser/profile': typeof AdviserProfileRoute
-  '/adviser/queue': typeof AdviserQueueRoute
-  '/adviser/students': typeof AdviserStudentsRoute
-  '/adviser/verified': typeof AdviserVerifiedRoute
   '/app/history': typeof AppHistoryRoute
   '/app/home': typeof AppHomeRoute
   '/app/log': typeof AppLogRoute
   '/app/profile': typeof AppProfileRoute
   '/app/reports': typeof AppReportsRoute
-  '/adviser/review/$id': typeof AdviserReviewIdRoute
+  '/admin/review/$id': typeof AdminReviewIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
-  '/adviser': typeof AdviserRouteWithChildren
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/admin/clearance': typeof AdminClearanceRoute
   '/admin/opportunities': typeof AdminOpportunitiesRoute
   '/admin/profile': typeof AdminProfileRoute
+  '/admin/queue': typeof AdminQueueRoute
+  '/admin/students': typeof AdminStudentsRoute
+  '/admin/verified': typeof AdminVerifiedRoute
   '/admin/violations': typeof AdminViolationsRoute
-  '/adviser/profile': typeof AdviserProfileRoute
-  '/adviser/queue': typeof AdviserQueueRoute
-  '/adviser/students': typeof AdviserStudentsRoute
-  '/adviser/verified': typeof AdviserVerifiedRoute
   '/app/history': typeof AppHistoryRoute
   '/app/home': typeof AppHomeRoute
   '/app/log': typeof AppLogRoute
   '/app/profile': typeof AppProfileRoute
   '/app/reports': typeof AppReportsRoute
-  '/adviser/review/$id': typeof AdviserReviewIdRoute
+  '/admin/review/$id': typeof AdminReviewIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/admin'
-    | '/adviser'
     | '/app'
     | '/login'
     | '/admin/clearance'
     | '/admin/opportunities'
     | '/admin/profile'
+    | '/admin/queue'
+    | '/admin/students'
+    | '/admin/verified'
     | '/admin/violations'
-    | '/adviser/profile'
-    | '/adviser/queue'
-    | '/adviser/students'
-    | '/adviser/verified'
     | '/app/history'
     | '/app/home'
     | '/app/log'
     | '/app/profile'
     | '/app/reports'
-    | '/adviser/review/$id'
+    | '/admin/review/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/admin'
-    | '/adviser'
     | '/app'
     | '/login'
     | '/admin/clearance'
     | '/admin/opportunities'
     | '/admin/profile'
+    | '/admin/queue'
+    | '/admin/students'
+    | '/admin/verified'
     | '/admin/violations'
-    | '/adviser/profile'
-    | '/adviser/queue'
-    | '/adviser/students'
-    | '/adviser/verified'
     | '/app/history'
     | '/app/home'
     | '/app/log'
     | '/app/profile'
     | '/app/reports'
-    | '/adviser/review/$id'
+    | '/admin/review/$id'
   id:
     | '__root__'
     | '/'
     | '/admin'
-    | '/adviser'
     | '/app'
     | '/login'
     | '/admin/clearance'
     | '/admin/opportunities'
     | '/admin/profile'
+    | '/admin/queue'
+    | '/admin/students'
+    | '/admin/verified'
     | '/admin/violations'
-    | '/adviser/profile'
-    | '/adviser/queue'
-    | '/adviser/students'
-    | '/adviser/verified'
     | '/app/history'
     | '/app/home'
     | '/app/log'
     | '/app/profile'
     | '/app/reports'
-    | '/adviser/review/$id'
+    | '/admin/review/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
-  AdviserRoute: typeof AdviserRouteWithChildren
   AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
 }
@@ -277,13 +252,6 @@ declare module '@tanstack/react-router' {
       path: '/app'
       fullPath: '/app'
       preLoaderRoute: typeof AppRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/adviser': {
-      id: '/adviser'
-      path: '/adviser'
-      fullPath: '/adviser'
-      preLoaderRoute: typeof AdviserRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -335,39 +303,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppHistoryRouteImport
       parentRoute: typeof AppRoute
     }
-    '/adviser/verified': {
-      id: '/adviser/verified'
-      path: '/verified'
-      fullPath: '/adviser/verified'
-      preLoaderRoute: typeof AdviserVerifiedRouteImport
-      parentRoute: typeof AdviserRoute
-    }
-    '/adviser/students': {
-      id: '/adviser/students'
-      path: '/students'
-      fullPath: '/adviser/students'
-      preLoaderRoute: typeof AdviserStudentsRouteImport
-      parentRoute: typeof AdviserRoute
-    }
-    '/adviser/queue': {
-      id: '/adviser/queue'
-      path: '/queue'
-      fullPath: '/adviser/queue'
-      preLoaderRoute: typeof AdviserQueueRouteImport
-      parentRoute: typeof AdviserRoute
-    }
-    '/adviser/profile': {
-      id: '/adviser/profile'
-      path: '/profile'
-      fullPath: '/adviser/profile'
-      preLoaderRoute: typeof AdviserProfileRouteImport
-      parentRoute: typeof AdviserRoute
-    }
     '/admin/violations': {
       id: '/admin/violations'
       path: '/violations'
       fullPath: '/admin/violations'
       preLoaderRoute: typeof AdminViolationsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/verified': {
+      id: '/admin/verified'
+      path: '/verified'
+      fullPath: '/admin/verified'
+      preLoaderRoute: typeof AdminVerifiedRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/students': {
+      id: '/admin/students'
+      path: '/students'
+      fullPath: '/admin/students'
+      preLoaderRoute: typeof AdminStudentsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/queue': {
+      id: '/admin/queue'
+      path: '/queue'
+      fullPath: '/admin/queue'
+      preLoaderRoute: typeof AdminQueueRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/profile': {
@@ -391,12 +352,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminClearanceRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/adviser/review/$id': {
-      id: '/adviser/review/$id'
+    '/admin/review/$id': {
+      id: '/admin/review/$id'
       path: '/review/$id'
-      fullPath: '/adviser/review/$id'
-      preLoaderRoute: typeof AdviserReviewIdRouteImport
-      parentRoute: typeof AdviserRoute
+      fullPath: '/admin/review/$id'
+      preLoaderRoute: typeof AdminReviewIdRouteImport
+      parentRoute: typeof AdminRoute
     }
   }
 }
@@ -405,36 +366,25 @@ interface AdminRouteChildren {
   AdminClearanceRoute: typeof AdminClearanceRoute
   AdminOpportunitiesRoute: typeof AdminOpportunitiesRoute
   AdminProfileRoute: typeof AdminProfileRoute
+  AdminQueueRoute: typeof AdminQueueRoute
+  AdminStudentsRoute: typeof AdminStudentsRoute
+  AdminVerifiedRoute: typeof AdminVerifiedRoute
   AdminViolationsRoute: typeof AdminViolationsRoute
+  AdminReviewIdRoute: typeof AdminReviewIdRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminClearanceRoute: AdminClearanceRoute,
   AdminOpportunitiesRoute: AdminOpportunitiesRoute,
   AdminProfileRoute: AdminProfileRoute,
+  AdminQueueRoute: AdminQueueRoute,
+  AdminStudentsRoute: AdminStudentsRoute,
+  AdminVerifiedRoute: AdminVerifiedRoute,
   AdminViolationsRoute: AdminViolationsRoute,
+  AdminReviewIdRoute: AdminReviewIdRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
-
-interface AdviserRouteChildren {
-  AdviserProfileRoute: typeof AdviserProfileRoute
-  AdviserQueueRoute: typeof AdviserQueueRoute
-  AdviserStudentsRoute: typeof AdviserStudentsRoute
-  AdviserVerifiedRoute: typeof AdviserVerifiedRoute
-  AdviserReviewIdRoute: typeof AdviserReviewIdRoute
-}
-
-const AdviserRouteChildren: AdviserRouteChildren = {
-  AdviserProfileRoute: AdviserProfileRoute,
-  AdviserQueueRoute: AdviserQueueRoute,
-  AdviserStudentsRoute: AdviserStudentsRoute,
-  AdviserVerifiedRoute: AdviserVerifiedRoute,
-  AdviserReviewIdRoute: AdviserReviewIdRoute,
-}
-
-const AdviserRouteWithChildren =
-  AdviserRoute._addFileChildren(AdviserRouteChildren)
 
 interface AppRouteChildren {
   AppHistoryRoute: typeof AppHistoryRoute
@@ -457,7 +407,6 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
-  AdviserRoute: AdviserRouteWithChildren,
   AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
 }

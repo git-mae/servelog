@@ -3,7 +3,7 @@ import { useSyncExternalStore } from "react";
 import { toast } from "sonner";
 import { notify } from "./browser-notifications";
 
-export type Role = "student" | "adviser" | "admin";
+export type Role = "student" | "admin";
 
 export type SubmissionStatus = "pending" | "approved" | "rejected";
 
@@ -18,7 +18,7 @@ export interface Submission {
   description: string;
   proofDataUrl?: string;
   status: SubmissionStatus;
-  adviserComment?: string;
+  reviewerComment?: string;
   flagged?: boolean; // AI duplicate flag
   createdAt: string;
 }
@@ -33,13 +33,6 @@ export interface Student {
   requiredHours: number;
   clearedAt?: string;
   clearanceNote?: string;
-}
-
-export interface Adviser {
-  id: string;
-  name: string;
-  email: string;
-  department: string;
 }
 
 export interface Admin {
@@ -69,18 +62,11 @@ const STUDENT: Student = {
   requiredHours: 30,
 };
 
-const ADVISER: Adviser = {
-  id: "adv-001",
-  name: "Prof. Teresita C. Alcantara",
-  email: "t.alcantara@neu.edu.ph",
-  department: "College of Informatics & Computing Studies",
-};
-
 const ADMIN: Admin = {
   id: "adm-001",
   name: "Dean Romulo P. Bautista",
   email: "r.bautista@neu.edu.ph",
-  office: "Office of Student Affairs",
+  office: "Office of Student Discipline",
 };
 
 const INITIAL_ROSTER: Student[] = [
@@ -104,7 +90,7 @@ const seedSubs = (): Submission[] => [
   { id: "sub-004", studentId: "stu-002", title: "Coastal Cleanup", organizer: "Green NEU", location: "Manila Bay", date: "2026-05-02", hours: 5, description: "Trash collection along baywalk.", status: "pending", createdAt: "2026-05-03T09:00:00Z" },
   { id: "sub-005", studentId: "stu-002", title: "Tree Planting Activity", organizer: "Green NEU", location: "La Mesa Watershed", date: "2026-04-26", hours: 5, description: "Planted saplings.", status: "pending", flagged: true, createdAt: "2026-05-04T08:00:00Z" },
   { id: "sub-006", studentId: "stu-003", title: "Donation Drive", organizer: "NEU CSO", location: "NEU Quadrangle", date: "2026-04-20", hours: 3, description: "Sorted donated clothes.", status: "approved", createdAt: "2026-04-21T10:00:00Z" },
-  { id: "sub-007", studentId: "stu-004", title: "Community Tutorial", organizer: "CICS SC", location: "Brgy. Holy Spirit", date: "2026-05-01", hours: 4, description: "Tutored grade-school kids in math.", status: "rejected", adviserComment: "Proof image is unclear. Please re-upload a higher quality photo with visible date.", createdAt: "2026-05-02T11:00:00Z" },
+  { id: "sub-007", studentId: "stu-004", title: "Community Tutorial", organizer: "CICS SC", location: "Brgy. Holy Spirit", date: "2026-05-01", hours: 4, description: "Tutored grade-school kids in math.", status: "rejected", reviewerComment: "Proof image is unclear. Please re-upload a higher quality photo with visible date.", createdAt: "2026-05-02T11:00:00Z" },
 ];
 
 export type NotifKind = "submitted" | "approved" | "rejected" | "upcoming" | "ready-clearance" | "cleared" | "violation";
@@ -126,7 +112,6 @@ export interface Notification {
 interface State {
   role: Role | null;
   currentStudentId: string;
-  currentAdviserId: string;
   currentAdminId: string;
   submissions: Submission[];
   notifications: Notification[];
@@ -137,7 +122,6 @@ interface State {
 let state: State = {
   role: (typeof window !== "undefined" ? (localStorage.getItem("servelog:role") as Role | null) : null),
   currentStudentId: "stu-001",
-  currentAdviserId: "adv-001",
   currentAdminId: "adm-001",
   submissions: seedSubs(),
   notifications: [],
@@ -186,12 +170,12 @@ export const actions = {
     emit();
     const stu = getStudent(sub.studentId);
     actions.pushNotification({
-      recipientRole: "adviser",
-      recipientId: ADVISER.id,
+      recipientRole: "admin",
+      recipientId: ADMIN.id,
       kind: "submitted",
       title: "New submission for review",
       body: `${stu.name} logged "${sub.title}" (${sub.hours} hrs)`,
-      href: "/adviser/review/$id",
+      href: "/admin/review/$id",
       hrefParams: { id: sub.id },
     });
     return sub;
@@ -201,7 +185,7 @@ export const actions = {
     state = {
       ...state,
       submissions: state.submissions.map((s) =>
-        s.id === id ? { ...s, status, adviserComment: comment } : s,
+        s.id === id ? { ...s, status, reviewerComment: comment } : s,
       ),
     };
     emit();
@@ -216,7 +200,6 @@ export const actions = {
           : `"${target.title}" was rejected${comment ? ` — ${comment}` : ""}`,
         href: "/app/history",
       });
-      // If approval pushes the student over required hours, alert admin for clearance.
       if (status === "approved") {
         const stu = getStudent(target.studentId);
         const totals = studentTotals(target.studentId);
@@ -238,7 +221,6 @@ export const actions = {
     const op: Opportunity = { ...input, id: `op-${Math.random().toString(36).slice(2, 7)}` };
     state = { ...state, opportunities: [op, ...state.opportunities] };
     emit();
-    // Notify student of the new opportunity.
     actions.pushNotification({
       recipientRole: "student",
       recipientId: STUDENT.id,
@@ -251,7 +233,6 @@ export const actions = {
     return op;
   },
   addViolation(input: { name: string; studentNo: string; course: string; email: string; violation: string; requiredHours: number }) {
-    // Update existing student by studentNo, or add a new one.
     const existing = state.roster.find((s) => s.studentNo === input.studentNo);
     if (existing) {
       state = {
@@ -368,8 +349,6 @@ export function seedUpcomingReminders() {
 
 export const getStudent = (id = state.currentStudentId): Student =>
   state.roster.find((s) => s.id === id) ?? STUDENT;
-
-export const getAdviser = (): Adviser => ADVISER;
 
 export const getAdmin = (): Admin => ADMIN;
 

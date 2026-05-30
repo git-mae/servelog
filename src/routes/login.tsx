@@ -11,13 +11,11 @@ export const Route = createFileRoute("/login")({
 
 const DEST: Record<Role, string> = {
   student: "/app/home",
-  adviser: "/adviser/queue",
-  admin: "/admin/clearance",
+  admin: "/admin/queue",
 };
 
 const EMAIL: Record<Role, string> = {
   student: "patrizia.rodriguez@neu.edu.ph",
-  adviser: "t.alcantara@neu.edu.ph",
   admin: "r.bautista@neu.edu.ph",
 };
 
@@ -45,15 +43,15 @@ function LoginPage() {
         </div>
 
         <form onSubmit={submit} className="mt-8 space-y-4">
-          <div className="grid grid-cols-3 gap-2 rounded-xl bg-secondary p-1">
-            {(["student", "adviser", "admin"] as const).map((r) => (
+          <div className="grid grid-cols-2 gap-2 rounded-xl bg-secondary p-1">
+            {(["student", "admin"] as const).map((r) => (
               <button
                 key={r}
                 type="button"
                 onClick={() => { setRole(r); setEmail(EMAIL[r]); }}
                 className={`rounded-lg px-2 py-2 text-xs font-medium transition ${role === r ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}
               >
-                {r === "student" ? "Student" : r === "adviser" ? "Adviser" : "Admin"}
+                {r === "student" ? "Student" : "OSD"}
               </button>
             ))}
           </div>
