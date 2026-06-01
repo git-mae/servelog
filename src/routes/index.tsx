@@ -82,6 +82,8 @@ function Landing() {
         <div className="mt-auto pt-10 text-center text-[11px] text-muted-foreground">
           Demo build · No real authentication ·{" "}
           <Link to="/login" className="underline underline-offset-2">Sign in</Link>
+          {" · "}
+          <Link to="/system" className="underline underline-offset-2">System design</Link>
         </div>
       </div>
     </PhoneFrame>

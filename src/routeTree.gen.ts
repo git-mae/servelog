@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SystemRouteImport } from './routes/system'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -27,6 +28,11 @@ import { Route as AdminOpportunitiesRouteImport } from './routes/admin.opportuni
 import { Route as AdminClearanceRouteImport } from './routes/admin.clearance'
 import { Route as AdminReviewIdRouteImport } from './routes/admin.review.$id'
 
+const SystemRoute = SystemRouteImport.update({
+  id: '/system',
+  path: '/system',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -118,6 +124,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/system': typeof SystemRoute
   '/admin/clearance': typeof AdminClearanceRoute
   '/admin/opportunities': typeof AdminOpportunitiesRoute
   '/admin/profile': typeof AdminProfileRoute
@@ -137,6 +144,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/system': typeof SystemRoute
   '/admin/clearance': typeof AdminClearanceRoute
   '/admin/opportunities': typeof AdminOpportunitiesRoute
   '/admin/profile': typeof AdminProfileRoute
@@ -157,6 +165,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/system': typeof SystemRoute
   '/admin/clearance': typeof AdminClearanceRoute
   '/admin/opportunities': typeof AdminOpportunitiesRoute
   '/admin/profile': typeof AdminProfileRoute
@@ -178,6 +187,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/app'
     | '/login'
+    | '/system'
     | '/admin/clearance'
     | '/admin/opportunities'
     | '/admin/profile'
@@ -197,6 +207,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/app'
     | '/login'
+    | '/system'
     | '/admin/clearance'
     | '/admin/opportunities'
     | '/admin/profile'
@@ -216,6 +227,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/app'
     | '/login'
+    | '/system'
     | '/admin/clearance'
     | '/admin/opportunities'
     | '/admin/profile'
@@ -236,10 +248,18 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
+  SystemRoute: typeof SystemRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/system': {
+      id: '/system'
+      path: '/system'
+      fullPath: '/system'
+      preLoaderRoute: typeof SystemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -409,17 +429,8 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
+  SystemRoute: SystemRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
