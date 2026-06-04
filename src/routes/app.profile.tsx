@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { AppHeader } from "@/components/AppHeader";
 import { actions, getStudent, studentTotals, useStore } from "@/lib/mock-data";
+import { useTheme } from "@/lib/theme";
 import {
   LogOut,
   Mail,
@@ -8,11 +9,11 @@ import {
   IdCard,
   AlertOctagon,
   ShieldCheck,
-  Settings,
-  Bell,
   HelpCircle,
   ChevronRight,
   Pencil,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 export const Route = createFileRoute("/app/profile")({
