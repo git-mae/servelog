@@ -130,12 +130,11 @@ function Profile() {
         <StatTile label="Approved logs" value={String(subs.filter((s) => s.studentId === student.id && s.status === "approved").length)} />
       </section>
 
-      {/* Settings list */}
+      {/* Preferences */}
       <section className="px-5 pt-6">
-        <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Account</p>
+        <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Preferences</p>
         <div className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
-          <ActionRow icon={Bell} label="Notifications" />
-          <ActionRow icon={Settings} label="Preferences" />
+          <ThemeRow />
           <ActionRow icon={HelpCircle} label="Help & support" />
         </div>
       </section>
