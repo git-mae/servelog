@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { AppHeader } from "@/components/AppHeader";
 import { actions, getStudent, studentTotals, useStore } from "@/lib/mock-data";
+import { useTheme } from "@/lib/theme";
 import {
   LogOut,
   Mail,
@@ -8,11 +9,11 @@ import {
   IdCard,
   AlertOctagon,
   ShieldCheck,
-  Settings,
-  Bell,
   HelpCircle,
   ChevronRight,
   Pencil,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 export const Route = createFileRoute("/app/profile")({
@@ -129,12 +130,11 @@ function Profile() {
         <StatTile label="Approved logs" value={String(subs.filter((s) => s.studentId === student.id && s.status === "approved").length)} />
       </section>
 
-      {/* Settings list */}
+      {/* Preferences */}
       <section className="px-5 pt-6">
-        <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Account</p>
+        <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Preferences</p>
         <div className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
-          <ActionRow icon={Bell} label="Notifications" />
-          <ActionRow icon={Settings} label="Preferences" />
+          <ThemeRow />
           <ActionRow icon={HelpCircle} label="Help & support" />
         </div>
       </section>
@@ -216,6 +216,36 @@ function StatTile({ label, value }: { label: string; value: string }) {
     <div className="rounded-2xl border border-border bg-card p-4">
       <p className="text-2xl font-semibold leading-none">{value}</p>
       <p className="mt-1 text-[11px] uppercase tracking-wider text-muted-foreground">{label}</p>
+    </div>
+  );
+}
+
+function ThemeRow() {
+  const { theme, toggle } = useTheme();
+  const isDark = theme === "dark";
+  const Icon = isDark ? Moon : Sun;
+  return (
+    <div className="flex w-full items-center gap-3 px-4 py-3">
+      <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-secondary text-primary">
+        <Icon className="h-4 w-4" />
+      </div>
+      <div className="flex-1">
+        <p className="text-sm font-medium">Theme</p>
+        <p className="text-[11px] text-muted-foreground">{isDark ? "Dark mode" : "Light mode"}</p>
+      </div>
+      <button
+        onClick={toggle}
+        aria-label="Toggle theme"
+        className={`relative h-6 w-11 shrink-0 rounded-full transition ${isDark ? "bg-primary" : "bg-secondary"}`}
+      >
+        <span
+          className={`absolute top-0.5 grid h-5 w-5 place-items-center rounded-full bg-card text-[10px] shadow transition-all ${
+            isDark ? "left-[22px]" : "left-0.5"
+          }`}
+        >
+          {isDark ? "🌙" : "☀"}
+        </span>
+      </button>
     </div>
   );
 }
