@@ -219,3 +219,33 @@ function StatTile({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+
+function ThemeRow() {
+  const { theme, toggle } = useTheme();
+  const isDark = theme === "dark";
+  const Icon = isDark ? Moon : Sun;
+  return (
+    <div className="flex w-full items-center gap-3 px-4 py-3">
+      <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-secondary text-primary">
+        <Icon className="h-4 w-4" />
+      </div>
+      <div className="flex-1">
+        <p className="text-sm font-medium">Theme</p>
+        <p className="text-[11px] text-muted-foreground">{isDark ? "Dark mode" : "Light mode"}</p>
+      </div>
+      <button
+        onClick={toggle}
+        aria-label="Toggle theme"
+        className={`relative h-6 w-11 shrink-0 rounded-full transition ${isDark ? "bg-primary" : "bg-secondary"}`}
+      >
+        <span
+          className={`absolute top-0.5 grid h-5 w-5 place-items-center rounded-full bg-card text-[10px] shadow transition-all ${
+            isDark ? "left-[22px]" : "left-0.5"
+          }`}
+        >
+          {isDark ? "🌙" : "☀"}
+        </span>
+      </button>
+    </div>
+  );
+}
