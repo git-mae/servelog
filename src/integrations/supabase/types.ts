@@ -14,16 +14,294 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      clearances: {
+        Row: {
+          cleared_at: string | null
+          cleared_by: string | null
+          created_at: string
+          id: string
+          remarks: string | null
+          status: string
+          student_id: string
+          total_completed_hours: number
+          total_required_hours: number
+          updated_at: string
+        }
+        Insert: {
+          cleared_at?: string | null
+          cleared_by?: string | null
+          created_at?: string
+          id?: string
+          remarks?: string | null
+          status?: string
+          student_id: string
+          total_completed_hours?: number
+          total_required_hours?: number
+          updated_at?: string
+        }
+        Update: {
+          cleared_at?: string | null
+          cleared_by?: string | null
+          created_at?: string
+          id?: string
+          remarks?: string | null
+          status?: string
+          student_id?: string
+          total_completed_hours?: number
+          total_required_hours?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          link: string | null
+          read_at: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          read_at?: string | null
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          read_at?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      opportunities: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          hours: number
+          id: string
+          location: string | null
+          scheduled_at: string | null
+          slots: number
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          hours?: number
+          id?: string
+          location?: string | null
+          scheduled_at?: string | null
+          slots?: number
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          hours?: number
+          id?: string
+          location?: string | null
+          scheduled_at?: string | null
+          slots?: number
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          course: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          office: string | null
+          student_id: string | null
+          updated_at: string
+          year_level: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          course?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          office?: string | null
+          student_id?: string | null
+          updated_at?: string
+          year_level?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          course?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          office?: string | null
+          student_id?: string | null
+          updated_at?: string
+          year_level?: string | null
+        }
+        Relationships: []
+      }
+      submissions: {
+        Row: {
+          created_at: string
+          description: string | null
+          hours_logged: number
+          id: string
+          opportunity_id: string | null
+          proof_url: string | null
+          reviewed_at: string | null
+          reviewer_id: string | null
+          reviewer_notes: string | null
+          status: string
+          student_id: string
+          updated_at: string
+          violation_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          hours_logged?: number
+          id?: string
+          opportunity_id?: string | null
+          proof_url?: string | null
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          reviewer_notes?: string | null
+          status?: string
+          student_id: string
+          updated_at?: string
+          violation_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          hours_logged?: number
+          id?: string
+          opportunity_id?: string | null
+          proof_url?: string | null
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          reviewer_notes?: string | null
+          status?: string
+          student_id?: string
+          updated_at?: string
+          violation_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submissions_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "submissions_violation_id_fkey"
+            columns: ["violation_id"]
+            isOneToOne: false
+            referencedRelation: "violations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      violations: {
+        Row: {
+          categories: string[]
+          description: string | null
+          id: string
+          recorded_at: string
+          recorded_by: string | null
+          required_hours: number
+          status: string
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          categories?: string[]
+          description?: string | null
+          id?: string
+          recorded_at?: string
+          recorded_by?: string | null
+          required_hours?: number
+          status?: string
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          categories?: string[]
+          description?: string | null
+          id?: string
+          recorded_at?: string
+          recorded_by?: string | null
+          required_hours?: number
+          status?: string
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "student"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +428,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "student"],
+    },
   },
 } as const
