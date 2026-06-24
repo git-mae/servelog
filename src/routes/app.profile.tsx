@@ -147,9 +147,11 @@ function Profile() {
           View hours summary report
         </Link>
         <button
-          onClick={() => {
+          onClick={async () => {
+            const { signOut } = await import("@/lib/auth");
+            await signOut();
             actions.setRole(null);
-            nav({ to: "/" });
+            nav({ to: "/login" });
           }}
           className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card py-3 text-sm font-medium text-destructive transition hover:border-destructive"
         >
