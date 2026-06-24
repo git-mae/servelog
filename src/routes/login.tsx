@@ -1,33 +1,70 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
-import { actions, type Role } from "@/lib/mock-data";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { Sprout, Loader2 } from "lucide-react";
 import { PhoneFrame } from "@/components/PhoneFrame";
-import { Sprout } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
+import { actions } from "@/lib/mock-data";
 
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [{ title: "Sign in — SERVELOG" }] }),
   component: LoginPage,
 });
 
-const DEST: Record<Role, string> = {
-  student: "/app/home",
-  admin: "/admin/queue",
-};
-
-const EMAIL: Record<Role, string> = {
-  student: "patrizia.rodriguez@neu.edu.ph",
-  admin: "r.bautista@neu.edu.ph",
-};
+type Mode = "signin" | "signup";
 
 function LoginPage() {
   const nav = useNavigate();
-  const [role, setRole] = useState<Role>("student");
-  const [email, setEmail] = useState(EMAIL.student);
+  const auth = useAuth();
+  const [mode, setMode] = useState<Mode>("signin");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [busy, setBusy] = useState(false);
 
-  const submit = (e: React.FormEvent) => {
+  // When session + role land, route the user to the right area
+  useEffect(() => {
+    if (auth.loading || !auth.user) return;
+    const role = auth.role ?? "student";
+    actions.setRole(role); // keep legacy mock store in sync for now
+    nav({ to: role === "admin" ? "/admin/queue" : "/app/home" });
+  }, [auth.loading, auth.user, auth.role, nav]);
+
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    actions.setRole(role);
-    nav({ to: DEST[role] });
+    if (busy) return;
+    setBusy(true);
+    try {
+      if (mode === "signup") {
+        const redirectTo =
+          typeof window !== "undefined" ? `${window.location.origin}/login` : undefined;
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: redirectTo,
+            data: { full_name: fullName },
+          },
+        });
+        if (error) throw error;
+        toast.success("Account created", {
+          description: "Check your email to confirm, then sign in.",
+        });
+        setMode("signin");
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        // navigation handled by the effect above once role is loaded
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Something went wrong";
+      toast.error(mode === "signup" ? "Sign up failed" : "Sign in failed", {
+        description: msg,
+      });
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -37,30 +74,54 @@ function LoginPage() {
           <Sprout className="h-6 w-6" />
           <span className="text-sm font-medium tracking-widest uppercase">ServeLog</span>
         </div>
+
         <div className="mt-10">
-          <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Sign in with your NEU account.</p>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {mode === "signin" ? "Welcome back" : "Create your account"}
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {mode === "signin"
+              ? "Sign in with your NEU account."
+              : "Use your NEU email to register."}
+          </p>
         </div>
 
         <form onSubmit={submit} className="mt-8 space-y-4">
           <div className="grid grid-cols-2 gap-2 rounded-xl bg-secondary p-1">
-            {(["student", "admin"] as const).map((r) => (
+            {(["signin", "signup"] as const).map((m) => (
               <button
-                key={r}
+                key={m}
                 type="button"
-                onClick={() => { setRole(r); setEmail(EMAIL[r]); }}
-                className={`rounded-lg px-2 py-2 text-xs font-medium transition ${role === r ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}
+                onClick={() => setMode(m)}
+                className={`rounded-lg px-2 py-2 text-xs font-medium transition ${
+                  mode === m ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
+                }`}
               >
-                {r === "student" ? "Student" : "OSD"}
+                {m === "signin" ? "Sign in" : "Sign up"}
               </button>
             ))}
           </div>
 
+          {mode === "signup" && (
+            <label className="block">
+              <span className="text-xs font-medium text-muted-foreground">Full name</span>
+              <input
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                required
+                className="mt-1 w-full rounded-xl border border-input bg-card px-4 py-3 text-sm outline-none focus:border-primary"
+              />
+            </label>
+          )}
+
           <label className="block">
             <span className="text-xs font-medium text-muted-foreground">NEU Email</span>
             <input
+              type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
               className="mt-1 w-full rounded-xl border border-input bg-card px-4 py-3 text-sm outline-none focus:border-primary"
             />
           </label>
@@ -69,15 +130,26 @@ function LoginPage() {
             <span className="text-xs font-medium text-muted-foreground">Password</span>
             <input
               type="password"
-              defaultValue="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+              autoComplete={mode === "signin" ? "current-password" : "new-password"}
               className="mt-1 w-full rounded-xl border border-input bg-card px-4 py-3 text-sm outline-none focus:border-primary"
             />
           </label>
 
-          <button className="mt-2 w-full rounded-xl bg-primary py-3 text-sm font-medium text-primary-foreground transition hover:opacity-90">
-            Sign in
+          <button
+            disabled={busy}
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:opacity-60"
+          >
+            {busy && <Loader2 className="h-4 w-4 animate-spin" />}
+            {mode === "signin" ? "Sign in" : "Create account"}
           </button>
-          <p className="text-center text-[11px] text-muted-foreground">Demo · no real auth</p>
+
+          <p className="text-center text-[11px] text-muted-foreground">
+            <Link to="/" className="underline">Back to home</Link>
+          </p>
         </form>
       </div>
     </PhoneFrame>
